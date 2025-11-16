@@ -1,1 +1,0 @@
-import { BodyPartExerciseList } from './BodyPartExerciseList';

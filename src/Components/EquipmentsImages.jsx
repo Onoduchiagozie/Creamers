@@ -100,7 +100,7 @@ const EquipmentsImages = ({ equip }) => {
                         marginLeft: 20,  // ✅ ensure left spacing
                         fontSize: 22,
                         marginTop: 8,
-                        fontFamily: 'MouseMemoir',
+                        fontFamily: 'American Typewriter',
                         textAlign: 'left', // ✅ no more centered mismatch
                     }}
                 >

@@ -8,23 +8,7 @@ import { LinearGradient } from 'expo-linear-gradient';
 import {UserContext} from "./UserContext";
 
 function HomeScreen({route}) {
-  // const [fontsLoaded] = useFonts({
-  //   DancingScript: require('../assets/DancingScript-VariableFont_wght.ttf'),
-  //   MouseMemoir: require('../assets/MouseMemoirs-Regular.ttf'),
-  //   Oswald: require('../assets/Oswald-VariableFont_wght.ttf'),
-  // });
-  //
-  // if (!fontsLoaded) {
-  //   return <AppLoading />;
-  // }
-
     const { myCurrentUserObject } = useContext(UserContext);
-    const prevUser = "kai"
-  //  const prevUser = route.params?.currentUser;
-
-
-
-
     return (
     <ScrollView>
           <LinearGradient
@@ -34,11 +18,12 @@ function HomeScreen({route}) {
               style={{ flex: 1 }}
           >
               <ScrollView contentContainerStyle={{ flexGrow: 1, marginTop:10 }}>
-                  <View className="flex-1"style={{
+                  <View className="flex-1" style={{
                       marginTop:10
                   }}>
-                      <StatusBar />
-                      <WelcomeBanner name={prevUser}/>
+
+                      {/*<StatusBar />*/}
+                      <WelcomeBanner />
                       <ExerciseCategory />
                       <BodyPartsWorkout />
                   </View>

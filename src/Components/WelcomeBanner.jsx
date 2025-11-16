@@ -1,7 +1,7 @@
 import React from "react";
 import { View, Text, TextInput } from "react-native";
 
-const WelcomeBanner = ({ name }) => {
+const WelcomeBanner = ({  }) => {
     return (
         <View
             style={{
@@ -22,13 +22,14 @@ const WelcomeBanner = ({ name }) => {
                     ellipsizeMode="tail"
                     style={{
                         fontSize: 40,
-                        fontFamily: "casual",
+                        fontWeight: "bold",
+                        fontFamily: "cursive",
                         color: "red",
                         maxWidth: "95%",   // stays within the screen
                         textAlign: "left", // ✅ text starts from left
                     }}
                 >
-                    Welcome {name}
+                    Welcome
                 </Text>
             </View>
 

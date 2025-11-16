@@ -1,7 +1,7 @@
 
 
 
-import { React, useState, useContext } from 'react';
+import {React,  useContext, useRef} from 'react';
 import { View, Text, TouchableOpacity } from 'react-native';
 import { ImageBackground } from 'expo-image';
 import { LinearGradient } from 'expo-linear-gradient';
@@ -11,10 +11,21 @@ import { addExercise } from '../ApiServices';
 import { UserContext } from "../UserContext";
 import * as Haptics from "expo-haptics";
 
-const ExerciseDetails = ({ route }) => {
-    const { setToken, setUser, token } = useContext(UserContext);
-    const { exercise } = route.params;
+const ExerciseDetails = ({ route, navigation }) => {
+    const { token } = useContext(UserContext);
 
+    const exercise = useRef(route.params?.exercise).current;
+
+    const instructions = Array.isArray(exercise?.instructions)
+        ? exercise.instructions
+        : typeof exercise?.instructions === "string"
+            ? exercise.instructions.split("|").map(i => i.trim()) // split into array
+            : []; // null or undefined
+    const secondaryMuscles = Array.isArray(exercise?.secondaryMuscles)
+        ? exercise.secondaryMuscles
+        : exercise?.secondaryMuscles
+            ? [exercise.secondaryMuscles] // if it's a string, wrap in array
+            : []; // if null/undefined → empty array
     return (
         <LinearGradient
             colors={['#d7d2cc', '#304352']}
@@ -31,7 +42,7 @@ const ExerciseDetails = ({ route }) => {
             >
                 {/* TITLE */}
                 <TouchableOpacity onPress={() => {
-                    Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
+                    Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Heavy);
 
                     addExercise(exercise, token);
 
@@ -43,6 +54,7 @@ const ExerciseDetails = ({ route }) => {
                         }}
                     >
                         <Text
+                            className="text-center"
                             style={{
                                 fontSize: 20,
                                 textAlign: 'center',
@@ -61,7 +73,7 @@ const ExerciseDetails = ({ route }) => {
 
                 {/* ✅ CENTERED IMAGE */}
                 <ImageBackground
-                    source={{ uri: exercise.gifUrl }}
+                    source={{ uri: exercise.localImagePath }}
                     style={{
                         marginTop: 25,
                         height: 398,        // reduced by 2
@@ -76,8 +88,11 @@ const ExerciseDetails = ({ route }) => {
                 />
 
                 {/* INSTRUCTIONS */}
-                <View style={{ marginTop: 30 }}>
+                <View style={{ marginTop: 30 }}
+                      className="bg-red-900"
+                >
                     <Text
+                        className="bg-teal-950"
                         style={{
                             fontSize: 18,
                             marginBottom: 10,
@@ -90,28 +105,45 @@ const ExerciseDetails = ({ route }) => {
                         Instructions
                     </Text>
 
-                    {exercise.instructions.map((instruction, index) => (
+
+
+                    {instructions.length > 0 ? (
+                        instructions.map((instruction, index) => (
+                            <Text
+                                key={index}
+                                style={{
+                                    fontSize: 22,
+                                    marginBottom: 15,
+                                    fontFamily: 'MouseMemoir',
+                                    textAlign: 'left',
+                                    width: 300,
+                                }}
+                            >
+                                <Text style={{ color: 'indigo', fontSize: 20 }}>{index + 1}</Text>
+                                . {instruction}
+                            </Text>
+                        ))
+                    ) : (
                         <Text
-                            key={index}
                             style={{
-                                fontSize: 22,
+                                fontSize: 18,
+                                fontStyle: 'italic',
+                                color: 'gray',
                                 marginBottom: 15,
                                 fontFamily: 'MouseMemoir',
-                                textAlign: 'left',
                                 width: 300,
                             }}
                         >
-                            <Text style={{ color: 'indigo', fontSize: 20 }}>
-                                {index + 1}
-                            </Text>
-                            . {instruction}
+                            No instructions available.
                         </Text>
-                    ))}
+                    )}
+
+
 
                     {/* SECONDARY MUSCLES */}
                     <Text style={{ fontSize: 20 }}>
                         Secondary muscles:{' '}
-                        {exercise.secondaryMuscles.map((muscle, index) => (
+                        {secondaryMuscles.map((muscle, index) => (
                             <Text
                                 key={index}
                                 style={{
@@ -121,10 +153,30 @@ const ExerciseDetails = ({ route }) => {
                                 }}
                             >
                                 {muscle}
-                                {index < exercise.secondaryMuscles.length - 1 ? ', ' : ''}
+                                {index < secondaryMuscles.length - 1 ? ', ' : ''}
                             </Text>
                         ))}
                     </Text>
+                </View>
+
+                {/* START TIMER BUTTON */}
+                <View style={{ marginTop: 30 }}>
+                    <TouchableOpacity
+                        onPress={() => {
+                            const startTime = Date.now();
+                            navigation.navigate('TimerScreen', { exercise, startTime });
+                        }}
+                        style={{
+                            backgroundColor: 'indigo',
+                            paddingVertical: 12,
+                            paddingHorizontal: 24,
+                            borderRadius: 8,
+                        }}
+                    >
+                        <Text style={{ color: 'white', fontSize: 18, fontFamily: 'casual' }}>
+                            Start  Timer
+                        </Text>
+                    </TouchableOpacity>
                 </View>
             </ScrollView>
         </LinearGradient>

@@ -1,12 +1,14 @@
 import React, { useContext, useState } from 'react';
 import { View, Text, KeyboardAvoidingView, Platform } from 'react-native';
-import { Button, Snackbar, TextInput } from 'react-native-paper';
+import { Button, Snackbar,TextInput} from 'react-native-paper';
 import axios from 'axios';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import JWT from 'expo-jwt';
 import { useNavigation, useRoute } from '@react-navigation/native';
 import { UserContext } from '../UserContext';
 import { BaseURL, secretKey } from '../Constants';
+
+
 
 const AuthScreen = () => {
     const navigation = useNavigation();
@@ -23,12 +25,14 @@ const AuthScreen = () => {
     const [message, setMessage] = useState('');
     const [loading, setLoading] = useState(false);
 
-    // Respect incoming mode from Splash (e.g., login)
-    React.useEffect(() => {
-        if (route?.params?.mode === 'login') {
-            setIsSignIn(true);
-        }
-    }, [route?.params?.mode]);
+
+
+    console.error = (e) => {
+        if (e && e.message) console.log("🔍 Caught error:", e.message);
+        else console.log("🔍 Caught error:", e);
+    };
+
+
 
     // If a valid token already exists, skip auth
     React.useEffect(() => {
@@ -42,7 +46,7 @@ const AuthScreen = () => {
                     navigation.replace('MainTabs');
                 }
             } catch (e) {
-                // ignore
+                console.error("error in navigation components",e.message);
             }
         };
         checkExisting();
@@ -59,6 +63,7 @@ const AuthScreen = () => {
 
         const endpoint = isSignIn ? 'Login' : 'Register';
         setLoading(true);
+
 
         try {
             const response = await axios.post(`${BaseURL}/Auth/${endpoint}`, {
@@ -84,6 +89,20 @@ const AuthScreen = () => {
                 navigation.replace('MainTabs');
             }
         } catch (error) {
+            if (error.response) {
+                // The request was made and the server responded with a status code
+                // that falls out of the range of 2xx
+                console.error('Status:', error.response.status);
+                console.error('Response Data:', error.response.data);
+                console.error('Headers:', error.response.headers);
+            } else if (error.request) {
+                // The request was made but no response was received
+                // `error.request` is an instance of XMLHttpRequest in the browser and an http.ClientRequest in node.js
+                console.error('Request:', error.request);
+            } else {
+                // Something happened in setting up the request that triggered an Error
+                console.error('Error config:', error.config);
+            }
             console.log('Auth error:', error);
             setMessage('Authentication failed. Try again.');
         } finally {
@@ -99,12 +118,12 @@ const AuthScreen = () => {
 
     return (
         <KeyboardAvoidingView
-            behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
+            behavior={Platform.OS === 'ios' ? 'padding' : "height"}
             style={{
                 flex: 1,
                 justifyContent: 'center',
-                padding: 20,
-                backgroundColor: '#19313E',
+                paddingHorizontal: 10,
+                backgroundColor: '#050112',
             }}
         >
             <Text
@@ -146,20 +165,18 @@ const AuthScreen = () => {
                 {isSignIn ? 'Sign In' : 'Register'}
             </Button>
 
-            <Button onPress={toggleAuth} mode="text">
+            <Button onPress={toggleAuth} mode="elevated">
                 {isSignIn ? "Don't have an account? Register" : 'Already have an account? Sign In'}
             </Button>
 
-            {/* Snackbar moved UPWARD */}
+
             <Snackbar
                 visible={visible}
                 onDismiss={() => setVisible(false)}
-                duration={1500}
-                style={{
-                    backgroundColor: '#3A8DFF',
-                    position: 'absolute',
-                    top: 80, // 👈 moves it higher on screen
-                    alignSelf: 'center',
+                duration={3000}
+                action={{
+                    label: 'Close',
+                    onPress: () => setVisible(false),
                 }}
             >
                 {message}

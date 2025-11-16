@@ -521,7 +521,6 @@ export const AI_Image_API_Key = '';
 export const secretKey = 'my_Super_Secret_Key_Here_Must_Not_Be_123, Or, Else';
 
  export const tokenGlobal ="";
-     "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6ImthaUBnbWFpbCIsIm5hbWVpZCI6ImI2NzQ1NWQwLWE4M2QtNDg3ZS1iMzE0LWFkNDUxYWYwODYzNiIsInVuaXF1ZV9uYW1lIjoia2FpIiwiZ2VuZGVyIjoic2hyZWQiLCJuYmYiOjE3NjE5NjA5MDMsImV4cCI6MTc2MTk4NjEwMywiaWF0IjoxNzYxOTUzNzAzfQ.NF1ylttnpIa0lRcSwcUA9u72EdBLn8vDXszAhK8Tqmo";
 
 //export const BaseURL = 'http://192.168.161.15:5151/Api';
 const local="127.0.0.1";

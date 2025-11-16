@@ -6,8 +6,7 @@
     "orientation": "portrait",
     "icon": "./assets/icon.png",
     "userInterfaceStyle": "light",
-    "newArchEnabled": true,
-    "splash": {
+     "splash": {
       "image": "./assets/img.png",
       "resizeMode": "contain",
       "backgroundColor": "#ffffff"
@@ -25,13 +24,6 @@
     "web": {
       "favicon": "./assets/favicon.png",
       "bundler": "metro"
-    }, "plugins": [
-     [
-         "expo-font",
-         {
-             "fonts": [ "assets/DancingScript-VariableFont_wght.ttf" ]
-         }
-     ]
- ]
+    }
   }
 }

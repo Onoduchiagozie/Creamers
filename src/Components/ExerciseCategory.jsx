@@ -76,7 +76,6 @@ const ExerciseCategory = () => {
                     fontWeight: 'bold',
                     marginLeft: 10,
                     fontFamily:"casual",
-
                     marginBottom: 5, // ✅ closer to images
                 }}
             >
