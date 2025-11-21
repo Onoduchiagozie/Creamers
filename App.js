@@ -83,9 +83,10 @@ function MainTabs() {
 /* ✅ Root stack – tabs + ExerciseDetails accessible from ANYWHERE */
 export default function App() {
     return (
+        <UserProvider>
         <PaperProvider>
             <NavigationContainer>
-            <UserProvider>
+
                 <RootStack.Navigator initialRouteName="Auth"
                     screenOptions={{ headerShown: false }}
                 >
@@ -102,9 +103,10 @@ export default function App() {
                     <RootStack.Screen name="ExerciseDetails" component={ExerciseDetails} />
                     {/*<RootStack.Screen name="TimerScreen" component={TimerScreen} />*/}
                 </RootStack.Navigator>
-            </UserProvider>
+
         </NavigationContainer>
         </PaperProvider>
+        </UserProvider>
     );
 }
 

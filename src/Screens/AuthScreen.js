@@ -1,6 +1,6 @@
 import React, { useContext, useState } from 'react';
 import { View, Text, KeyboardAvoidingView, Platform } from 'react-native';
-import { Button, Snackbar,TextInput} from 'react-native-paper';
+import {Button, Divider, HelperText, Snackbar, TextInput} from 'react-native-paper';
 import axios from 'axios';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import JWT from 'expo-jwt';
@@ -25,6 +25,7 @@ const AuthScreen = () => {
     const [message, setMessage] = useState('');
     const [loading, setLoading] = useState(false);
 
+    const [viewPass, setViewPass] = useState(false);
 
 
     console.error = (e) => {
@@ -32,7 +33,15 @@ const AuthScreen = () => {
         else console.log("🔍 Caught error:", e);
     };
 
-
+    const userNameHasErrors = () => {
+        return userName.length<3;
+    };
+    const passwordHasErrors = () => {
+        return password.length<4;
+    };
+    // const hasErrors = () => {
+    //     return !userName.includes('@');
+    // };
 
     // If a valid token already exists, skip auth
     React.useEffect(() => {
@@ -43,6 +52,15 @@ const AuthScreen = () => {
                 const decoded = JWT.decode(token, secretKey);
                 const nowMs = Date.now();
                 if (decoded && (!decoded.exp || decoded.exp * 1000 > nowMs)) {
+                    setUser( {
+                        username: decoded.unique_name || 'unknown',
+                        email: decoded.email || 'unknown',
+                        goal: decoded.gender || 'unknown',
+                    });
+
+                  //  setUser(userObj);
+                    setMessage('Welcome Back!');
+                    setVisible(true);
                     navigation.replace('MainTabs');
                 }
             } catch (e) {
@@ -80,31 +98,38 @@ const AuthScreen = () => {
 
                 const decoded = JWT.decode(result, secretKey);
                 const userObj = {
-                    username: decoded.unique_name || 'Unknown',
+                    username: decoded.unique_name || '',
                     email: decoded.email || '',
                     goal: decoded.gender || '',
                 };
 
                 setUser(userObj);
+
                 navigation.replace('MainTabs');
             }
         } catch (error) {
             if (error.response) {
                 // The request was made and the server responded with a status code
                 // that falls out of the range of 2xx
+                setMessage(`${error.response.data}`);
+                setVisible(true);
+
                 console.error('Status:', error.response.status);
                 console.error('Response Data:', error.response.data);
                 console.error('Headers:', error.response.headers);
             } else if (error.request) {
                 // The request was made but no response was received
                 // `error.request` is an instance of XMLHttpRequest in the browser and an http.ClientRequest in node.js
+                setMessage('No response From Server');
+                setVisible(true);
                 console.error('Request:', error.request);
             } else {
                 // Something happened in setting up the request that triggered an Error
+                setMessage('Login failed. (Something happened in setting up the request that triggered an Error)');
+                setVisible(true);
                 console.error('Error config:', error.config);
             }
             console.log('Auth error:', error);
-            setMessage('Authentication failed. Try again.');
         } finally {
             setLoading(false);
             setVisible(true);
@@ -115,6 +140,10 @@ const AuthScreen = () => {
     React.useLayoutEffect(() => {
         navigation.setOptions({ tabBarStyle: { display: 'none' } });
     }, [navigation]);
+
+    function viewpassword() {
+        setViewPass(!viewPass);
+    }
 
     return (
         <KeyboardAvoidingView
@@ -138,26 +167,42 @@ const AuthScreen = () => {
                 {isSignIn ? 'Login' : 'Join Us'}
             </Text>
 
-            <TextInput label="Username" value={userName} onChangeText={setUserName} style={{ marginBottom: 10 }} />
+            <TextInput label="Username"
+                       right={<TextInput.Icon icon="account" />}
+                       value={userName} onChangeText={setUserName}  style={{ marginBottom: 10 }} />
+            <HelperText theme={{ colors: { primary: 'green' } }}  type="error" visible={userNameHasErrors()}>
+                Username is invalid!
+            </HelperText>
             {!isSignIn && (
                 <>
-                    <TextInput label="Email" value={email} onChangeText={setEmail} style={{ marginBottom: 10 }} />
+                    {/*chnag ethe icon for the eyes to b ethe icon for done when the password is done entered or matches  */}
+                    <TextInput label="Email" value={email}     right={<TextInput.Icon  icon="mail" />}
+                               onChangeText={setEmail} style={{ marginBottom: 10 }} />
                     <TextInput label="Goal" value={goal} onChangeText={setGoal} style={{ marginBottom: 10 }} />
                 </>
             )}
+            {/*const viewPassword=useState(true)*/}
             <TextInput
                 label="Password"
                 value={password}
-                secureTextEntry
+                secureTextEntry={viewPass}
                 onChangeText={setPassword}
                 style={{ marginBottom: 10 }}
+                right={<TextInput.Icon icon="eye" onPress={viewpassword} />}
+
             />
+            <HelperText theme={{ colors: { primary: 'green' } }}  type="error" visible={passwordHasErrors()}>
+            password is invalid!
+        </HelperText>
             {!isSignIn && (
                 <TextInput
                     label="Confirm Password"
                     value={confirmPassword}
                     onChangeText={setConfirmPassword}
                     style={{ marginBottom: 10 }}
+                    secureTextEntry={viewpassword}
+                    right={<TextInput.Icon icon="eye" onPress={viewpassword} />}
+
                 />
             )}
 
@@ -174,8 +219,23 @@ const AuthScreen = () => {
                 visible={visible}
                 onDismiss={() => setVisible(false)}
                 duration={3000}
+                wrapperStyle={{ top: 90 }}
+                style={{
+
+                    borderRadius: 14,
+                    backgroundColor: '#c3b426',
+                    // red for errors
+                     paddingHorizontal: 10,
+                    elevation: 16,
+                    position: 'absolute',
+
+                    left: 20,
+                    right: 20,
+
+
+                }}
                 action={{
-                    label: 'Close',
+                    label: 'Retry',
                     onPress: () => setVisible(false),
                 }}
             >

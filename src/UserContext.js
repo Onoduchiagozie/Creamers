@@ -77,13 +77,15 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import JWT from 'expo-jwt';
 import { secretKey } from './Constants';
 
-export const UserContext = createContext({
-    myCurrentUserObject: {},
-    setUser: () => {},
-    token: '',
-    setToken: () => {},
-    restoreUser: () => {},
-});
+export const UserContext = createContext(
+//     {
+//     myCurrentUserObject: {},
+//     setUser: () => {},
+//     token: '',
+//     setToken: () => {},
+//     restoreUser: () => {},
+// }
+);
 
 export const UserProvider = ({ children }) => {
     const [myCurrentUserObject, setUser] = useState({});
@@ -118,6 +120,7 @@ export const UserProvider = ({ children }) => {
                             goal: decoded.gender || 'No goal specified',
                         });
                         setToken(storedToken);
+
                         console.log('User auto-restored from storage');
                     } else {
                         // Token expired
