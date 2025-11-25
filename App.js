@@ -2,9 +2,8 @@ import {StyleSheet} from 'react-native';
 import {NavigationContainer} from '@react-navigation/native';
 import {createStackNavigator} from '@react-navigation/stack';
 import {createBottomTabNavigator} from '@react-navigation/bottom-tabs';
-import { Provider as PaperProvider } from 'react-native-paper'; // ✅ ADD THIS
-import './global.css';
-
+import { Provider as PaperProvider } from 'react-native-paper'; //
+ import './global.css';
 import HomeScreen from './src/HomeScreen';
 import ExerciseDetails from './src/Screens/ExerciseDetails';
  import ProfileScreen from './src/Screens/ProfileScreen';
@@ -31,25 +30,25 @@ function HomeStack() {
             <Stack.Screen name="HomePage" component={HomeScreen} />
             <Stack.Screen name="BodyPartExerciseList" component={BodyPartExerciseList}/>
             <Stack.Screen name="ExerciseDetails" component={ExerciseDetails} />
-            <Stack.Screen name="TimerScreen" component={TimerScreen} />
+            {/*<Stack.Screen name="TimerScreen" component={TimerScreen} />*/}
          </Stack.Navigator>
     );
 }
-
-function ProfileStack() {
-    return (
-        <Stack.Navigator initialRouteName="ProfileScreen"
-                         screenOptions={{ headerShown: false }}>
-            <Stack.Screen name="ProfileScreen" component={ProfileScreen} />
-            <Stack.Screen name="ExerciseDetails" component={ExerciseDetails} />
-            <Stack.Screen name="TimerScreen" component={TimerScreen} />
-
-        </Stack.Navigator>
-
-    );
-}
-
-/* ✅ Bottom tab navigator */
+//
+// function ProfileStack() {
+//     return (
+//         <Stack.Navigator initialRouteName="ProfileScreen"
+//                          screenOptions={{ headerShown: false }}>
+//             <Stack.Screen name="ProfileScreen" component={ProfileScreen} />
+//             <Stack.Screen name="ExerciseDetails" component={ExerciseDetails} />
+//             {/*<Stack.Screen name="TimerScreen" component={TimerScreen} />*/}
+//
+//         </Stack.Navigator>
+//
+//     );
+// }
+//
+// /* ✅ Bottom tab navigator */
 function MainTabs() {
     return (
         <Tab.Navigator
@@ -75,7 +74,7 @@ function MainTabs() {
             })}>
             <Tab.Screen name="Home" component={HomeStack} />
          {/*//   <Tab.Screen name="MyFont" component={FontPreviewScreen} />*/}
-            <Tab.Screen name="Profile" component={ProfileStack} />
+         {/*   <Tab.Screen name="Profile" component={ProfileStack} />*/}
         </Tab.Navigator>
     );
 }
@@ -87,20 +86,21 @@ export default function App() {
         <PaperProvider>
             <NavigationContainer>
 
-                <RootStack.Navigator initialRouteName="Auth"
+                <RootStack.Navigator
+                    // initialRouteName="Auth"
                     screenOptions={{ headerShown: false }}
                 >
                     {/*/!* Startup auth gate *!/*/}
                     {/*<RootStack.Screen name="Splash" component={SplashScreen} />*/}
 
                     {/*/!* Public auth screen *!/*/}
-                    <RootStack.Screen name="Auth" component={AuthScreen} />
+                    {/*<RootStack.Screen name="Auth" component={AuthScreen} />*/}
 
                     {/* Main app (tabs) */}
                     <RootStack.Screen name="MainTabs" component={MainTabs} />
 
                     {/* ✅ GLOBAL ROUTES accessible from all tabs */}
-                    <RootStack.Screen name="ExerciseDetails" component={ExerciseDetails} />
+                    {/*<RootStack.Screen name="ExerciseDetails" component={ExerciseDetails} />*/}
                     {/*<RootStack.Screen name="TimerScreen" component={TimerScreen} />*/}
                 </RootStack.Navigator>
 

@@ -8,8 +8,6 @@ import { useNavigation, useRoute } from '@react-navigation/native';
 import { UserContext } from '../UserContext';
 import { BaseURL, secretKey } from '../Constants';
 
-
-
 const AuthScreen = () => {
     const navigation = useNavigation();
     const route = useRoute();
@@ -25,12 +23,12 @@ const AuthScreen = () => {
     const [message, setMessage] = useState('');
     const [loading, setLoading] = useState(false);
 
-    const [viewPass, setViewPass] = useState(false);
+    const [viewPassWord, setViewPassWord] = useState(false);
 
 
     console.error = (e) => {
-        if (e && e.message) console.log("🔍 Caught error:", e.message);
-        else console.log("🔍 Caught error:", e);
+        if (e && e.message) console.log("Caught error: =>", e.message);
+        else console.log("🔍 Caught error =>:", e);
     };
 
     const userNameHasErrors = () => {
@@ -39,7 +37,7 @@ const AuthScreen = () => {
     const passwordHasErrors = () => {
         return password.length<4;
     };
-    // const hasErrors = () => {
+    // const emailHasErrors = () => {
     //     return !userName.includes('@');
     // };
 
@@ -60,6 +58,7 @@ const AuthScreen = () => {
 
                   //  setUser(userObj);
                     setMessage('Welcome Back!');
+                    console.log("authscreen perosnal login ")
                     setVisible(true);
                     navigation.replace('MainTabs');
                 }
@@ -125,7 +124,7 @@ const AuthScreen = () => {
                 console.error('Request:', error.request);
             } else {
                 // Something happened in setting up the request that triggered an Error
-                setMessage('Login failed. (Something happened in setting up the request that triggered an Error)');
+                setMessage('Login failed. (Something happened in setting up the request)');
                 setVisible(true);
                 console.error('Error config:', error.config);
             }
@@ -141,8 +140,8 @@ const AuthScreen = () => {
         navigation.setOptions({ tabBarStyle: { display: 'none' } });
     }, [navigation]);
 
-    function viewpassword() {
-        setViewPass(!viewPass);
+    function passwordVisible() {
+        setViewPassWord(!viewPassWord);
     }
 
     return (
@@ -185,10 +184,10 @@ const AuthScreen = () => {
             <TextInput
                 label="Password"
                 value={password}
-                secureTextEntry={viewPass}
+                secureTextEntry={viewPassWord}
                 onChangeText={setPassword}
                 style={{ marginBottom: 10 }}
-                right={<TextInput.Icon icon="eye" onPress={viewpassword} />}
+                right={<TextInput.Icon icon="eye" onPress={passwordVisible} />}
 
             />
             <HelperText theme={{ colors: { primary: 'green' } }}  type="error" visible={passwordHasErrors()}>
@@ -200,8 +199,8 @@ const AuthScreen = () => {
                     value={confirmPassword}
                     onChangeText={setConfirmPassword}
                     style={{ marginBottom: 10 }}
-                    secureTextEntry={viewpassword}
-                    right={<TextInput.Icon icon="eye" onPress={viewpassword} />}
+                    secureTextEntry={viewPassWord}
+                    right={<TextInput.Icon icon="eye" onPress={passwordVisible} />}
 
                 />
             )}
@@ -221,18 +220,13 @@ const AuthScreen = () => {
                 duration={3000}
                 wrapperStyle={{ top: 90 }}
                 style={{
-
                     borderRadius: 14,
-                    backgroundColor: '#c3b426',
-                    // red for errors
-                     paddingHorizontal: 10,
-                    elevation: 16,
+                    backgroundColor: 'rgba(38,72,195,0.91)',
+                    paddingHorizontal: 10,
+                    elevation: 20,
                     position: 'absolute',
-
                     left: 20,
                     right: 20,
-
-
                 }}
                 action={{
                     label: 'Retry',

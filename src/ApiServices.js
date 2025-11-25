@@ -20,7 +20,6 @@ export async function addExercise(exercise,token) {
   };
   try {
       const storedToken = await AsyncStorage.getItem('auth_token');
-      const myToken = storedToken;
 
       const response = await axios.post(
       `${BaseURL}/Favourites/AddFavourite`,
@@ -37,8 +36,7 @@ export async function addExercise(exercise,token) {
       'Exercise added!',
       `${ExerciseDTO.name} has been added to your favourites.`
     );
-    //console.log('response from portal', response.data);
-    const result = response.data.message;
+     const result = response.data.message;
   } catch (error) {
     Alert.alert(
       'Error Adding Workout!',

@@ -525,4 +525,4 @@ export const secretKey = 'my_Super_Secret_Key_Here_Must_Not_Be_123, Or, Else';
 //export const BaseURL = 'http://192.168.161.15:5151/Api';
 const localurl="127.0.0.1";
 const url ="192.168.100.36";
-export const BaseURL = `http://${url}:5151/Api`;
+export const BaseURL = `http://${localurl}:5151/Api`;

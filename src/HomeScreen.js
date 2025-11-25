@@ -6,6 +6,7 @@ import BodyPartsWorkout from './Components/BodyPartsWorkout';
 import { ScrollView } from 'react-native-virtualized-view';
 import { LinearGradient } from 'expo-linear-gradient';
 import {UserContext} from "./UserContext";
+import MyBanner from "./Components/MyCarouselBanner";
 
 function HomeScreen({route}) {
     const { myCurrentUserObject } = useContext(UserContext);
@@ -24,7 +25,9 @@ function HomeScreen({route}) {
 
                       {/*<StatusBar />*/}
                       <WelcomeBanner />
-                      <ExerciseCategory />
+                       <ExerciseCategory />
+                      <MyBanner />
+
                       <BodyPartsWorkout />
                   </View>
               </ScrollView>
