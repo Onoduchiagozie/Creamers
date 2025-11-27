@@ -1,18 +1,24 @@
 import React from 'react';
-import { Image, Text, TouchableOpacity, View } from 'react-native';
+import {Dimensions, Image, Text, TouchableOpacity, View} from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import * as Haptics from "expo-haptics";
+import {ImageBackground} from "expo-image";
 
 const BodyPartsImages = ({ givenImage }) => {
     const navigation = useNavigation();
+    const { width } = Dimensions.get('window');
+const breadth=width*0.8;
+const length=breadth*0.5;
 
     return (
         <TouchableOpacity
             style={{
-                width: 150,             // ✅ consistent card width
-                alignItems: 'center',   // ✅ image + text perfectly centered
-                marginHorizontal: 15,    // ✅ 2-point spacing between columns
-            }}
+                 backgroundColor:'red',
+                justifyContent:'space-between',
+
+
+                // ✅ consistent card width
+             }}
 
 
             onPress={() =>{
@@ -21,34 +27,31 @@ const BodyPartsImages = ({ givenImage }) => {
             }
         >
 
-            <Image
+            <ImageBackground
                 source={givenImage.imagePath}
                 style={{
-                    height: 350,
-                    width: '80%',         // ✅ takes 80% of screen width
+
                     alignSelf: 'center',  // ✅ centers it horizontally
-
-                    resizeMode: 'cover',
-                    borderWidth: 4,
+                     borderWidth: 4,
                     borderRadius: 10,
-
                     marginBottom: 10,     // ✅ spacing from rows below
                     marginTop: 10,        // ✅ spacing from rows above
                 }}
-            />
-
-            <Text
-                style={{
-                    fontFamily: 'MouseMemoir',
-                    fontSize: 22,
-                    textAlign: 'center',   // ✅ aligned under image
-                }}
             >
-                {givenImage.name
-                    .split(' ')
-                    .map((w) => w.charAt(0).toUpperCase() + w.slice(1))
-                    .join(' ')}
-            </Text>
+                <Text
+                    style={{
+                        fontFamily: 'MouseMemoir',
+                        fontSize: 22,
+                        textDecorationStyle:'dotted',
+                        textAlign: 'center',   // ✅ aligned under image
+                    }}
+                >
+                    {givenImage.name
+                        .split(' ')
+                        .map((w) => w.charAt(0).toUpperCase() + w.slice(1))
+                        .join(' ')}
+                </Text>            </ImageBackground>
+
 
         </TouchableOpacity>
     );

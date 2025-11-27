@@ -2,12 +2,11 @@ import React from 'react';
 import { View, Text, FlatList, Dimensions } from 'react-native';
 import { Equipments } from '../Constants';
 import EquipmentsImages from './EquipmentsImages';
-import { useFonts } from 'expo-font';
-import {ScrollView} from "react-native-virtualized-view";
+ import {ScrollView} from "react-native-virtualized-view";
 
 //const { width } = Dimensions.get('window');
 
-const MyBanner = ({height,width}) => {
+const MyBanner = () => {
 
     return (
         <View
@@ -27,7 +26,7 @@ const MyBanner = ({height,width}) => {
                 }}
             >
                 Choose
-                <Text style={{ color: 'red' }}> Routine</Text>
+                <Text style={{ color: 'red' }}> Seller</Text>
             </Text>
 
             {/* LIST */}

@@ -58,8 +58,7 @@ const AuthScreen = () => {
 
                   //  setUser(userObj);
                     setMessage('Welcome Back!');
-                    console.log("authscreen perosnal login ")
-                    setVisible(true);
+                     setVisible(true);
                     navigation.replace('MainTabs');
                 }
             } catch (e) {
@@ -136,9 +135,9 @@ const AuthScreen = () => {
     };
 
     // 🔒 Hide bottom tab navigation when on AuthScreen
-    React.useLayoutEffect(() => {
-        navigation.setOptions({ tabBarStyle: { display: 'none' } });
-    }, [navigation]);
+    // React.useLayoutEffect(() => {
+    //     navigation.setOptions({ tabBarStyle: {display: 'none'} });
+    // }, [navigation]);
 
     function passwordVisible() {
         setViewPassWord(!viewPassWord);

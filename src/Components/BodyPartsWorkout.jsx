@@ -10,7 +10,12 @@ const BodyPartsWorkout = () => {
     const navigation = useNavigation();
 
     return (
-        <View style={{ paddingHorizontal: 10 }}>
+        <View style={{
+             backgroundColor:'green',
+            paddingHorizontal: 10,
+            justifyContent: 'space-between',
+            alignItems: 'space-between'
+        }}>
 
             {/* TITLE */}
             <Text
@@ -18,12 +23,13 @@ const BodyPartsWorkout = () => {
                     fontSize: 30,
                     fontFamily: 'casual',
                     fontWeight: 'bold',
+                    fontStyle: 'italic',
                     marginLeft: 8,     // ✅ 8-point shift from left
                     marginBottom: 5,   // ✅ close to images
                 }}
             >
-                Body
-                <Text style={{ color: 'red' }}> Workout</Text>
+                Choose
+                <Text style={{ color: 'red' }}> Dinner</Text>
             </Text>
 
 
@@ -32,18 +38,15 @@ const BodyPartsWorkout = () => {
                     alignItems: 'center',
                     justifyContent: 'center',
                     marginTop: 10,
-                    paddingBottom: 100,
-                }}
+                    backgroundColor:'blue'
+                 }}
             >
                 <FlatList
                     data={BodyParts}
                     keyExtractor={(item) => item.id || item.name}
                     numColumns={2}
                     showsVerticalScrollIndicator={false}
-                    columnWrapperStyle={{
-                        justifyContent: 'space-between', // ✅ makes spacing even
-                        margin: 15,
-                    }}
+
                     renderItem={({ item }) => (
                         <BodyPartsImages givenImage={item} />
                     )}

@@ -7,9 +7,10 @@ import { ScrollView } from 'react-native-virtualized-view';
 import { LinearGradient } from 'expo-linear-gradient';
 import {UserContext} from "./UserContext";
 import MyBanner from "./Components/MyCarouselBanner";
+import MyMainScroller from "./Components/Scroller";
 
-function HomeScreen({route}) {
-    const { myCurrentUserObject } = useContext(UserContext);
+function HomeScreen() {
+ //   const { myCurrentUserObject } = useContext(UserContext);
     return (
     <ScrollView>
           <LinearGradient
@@ -23,8 +24,9 @@ function HomeScreen({route}) {
                       marginTop:10
                   }}>
 
-                      {/*<StatusBar />*/}
-                      <WelcomeBanner />
+
+                       <WelcomeBanner />
+                      <MyMainScroller/>
                        <ExerciseCategory />
                       <MyBanner />
 

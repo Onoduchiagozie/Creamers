@@ -3,19 +3,20 @@ import { View, Text, FlatList, Dimensions } from 'react-native';
 import { Equipments } from '../Constants';
 import EquipmentsImages from './EquipmentsImages';
  import {ScrollView} from "react-native-virtualized-view";
+import MyMainScrollerScroller from "./MyMainScrollerScroller";
 
 //const { width } = Dimensions.get('window');
 
-const ExerciseCategory = () => {
+const MyMainScroller = () => {
 
     return (
         <View
             style={{
                 marginHorizontal: 10,
                 marginTop: 20,
-             }}
+            }}
         >
-             <Text
+            <Text
                 style={{
                     fontSize: 20,
                     fontWeight: 'bold',
@@ -26,7 +27,7 @@ const ExerciseCategory = () => {
                 }}
             >
                 Choose
-                <Text style={{ color: 'red' }}> Meal</Text>
+                <Text style={{ color: 'red' }}> Market</Text>
             </Text>
 
             {/* LIST */}
@@ -39,12 +40,12 @@ const ExerciseCategory = () => {
                     paddingLeft: 5,
                 }}
                 renderItem={({ item }) =>
-                    <EquipmentsImages equip={item}
+                    <MyMainScrollerScroller equip={item}
                     />}
             />
 
-         </View>
+        </View>
     );
 };
 
-export default ExerciseCategory;
+export default MyMainScroller;

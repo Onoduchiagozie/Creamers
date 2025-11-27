@@ -1,40 +1,38 @@
-import {StyleSheet} from 'react-native';
+import {StyleSheet, View,Text} from 'react-native';
 import {NavigationContainer} from '@react-navigation/native';
-import {createStackNavigator} from '@react-navigation/stack';
+import {createStackNavigator} from "@react-navigation/stack";
 import {createBottomTabNavigator} from '@react-navigation/bottom-tabs';
 import { Provider as PaperProvider } from 'react-native-paper'; //
- import './global.css';
-import HomeScreen from './src/HomeScreen';
-import ExerciseDetails from './src/Screens/ExerciseDetails';
- import ProfileScreen from './src/Screens/ProfileScreen';
-import {Ionicons} from '@expo/vector-icons';
+import './global.css';
 import AuthScreen from './src/Screens/AuthScreen';
 import {UserProvider} from './src/UserContext';
-import {BodyPartExerciseList} from './src/Screens/BodyPartExerciseList';
-import SplashScreen from "./src/Screens/SplashScreen";
-import exerciseDetails from "./src/Screens/ExerciseDetails";
-import TimerScreen from "./src/Screens/TimerScreen";
-import FontPreviewScreen from "./src/Screens/FontsScreen";
+import HomeScreen from "./src/HomeScreen";
+import {BodyPartExerciseList} from "./src/Screens/BodyPartExerciseList";
+import ExerciseDetails from "./src/Screens/ExerciseDetails";
+import {EvilIcons, Ionicons} from "@expo/vector-icons";
+import {createNativeStackNavigator} from "@react-navigation/native-stack";
 
-const RootStack = createStackNavigator();
-const Stack = createStackNavigator();
+// const RootStack = createStackNavigator();
+const Stack = createNativeStackNavigator();
 const Tab = createBottomTabNavigator();
-
 /* ✅ Inner stack for HOME tab */
 function HomeStack() {
     return (
         <Stack.Navigator
             initialRouteName="HomePage"
-            screenOptions={{ headerShown: false }}
+            screenOptions={{
+                headerShown: false,
+            }}
+
         >
             <Stack.Screen name="HomePage" component={HomeScreen} />
-            <Stack.Screen name="BodyPartExerciseList" component={BodyPartExerciseList}/>
-            <Stack.Screen name="ExerciseDetails" component={ExerciseDetails} />
+            {/*<Stack.Screen name="BodyPartExerciseList" component={BodyPartExerciseList}/>*/}
+            {/*<Stack.Screen name="ExerciseDetails" component={ExerciseDetails} />*/}
             {/*<Stack.Screen name="TimerScreen" component={TimerScreen} />*/}
          </Stack.Navigator>
     );
 }
-//
+// //
 // function ProfileStack() {
 //     return (
 //         <Stack.Navigator initialRouteName="ProfileScreen"
@@ -47,8 +45,8 @@ function HomeStack() {
 //
 //     );
 // }
-//
-// /* ✅ Bottom tab navigator */
+
+/* ✅ Bottom tab navigator */
 function MainTabs() {
     return (
         <Tab.Navigator
@@ -85,11 +83,10 @@ export default function App() {
         <UserProvider>
         <PaperProvider>
             <NavigationContainer>
-
-                <RootStack.Navigator
+                <Stack.Navigator
                     // initialRouteName="Auth"
-                    screenOptions={{ headerShown: false }}
-                >
+                    screenOptions={{headerShown: false}}
+                 >
                     {/*/!* Startup auth gate *!/*/}
                     {/*<RootStack.Screen name="Splash" component={SplashScreen} />*/}
 
@@ -97,12 +94,12 @@ export default function App() {
                     {/*<RootStack.Screen name="Auth" component={AuthScreen} />*/}
 
                     {/* Main app (tabs) */}
-                    <RootStack.Screen name="MainTabs" component={MainTabs} />
+                    <Stack.Screen name="MainTabs" component={MainTabs} />
 
                     {/* ✅ GLOBAL ROUTES accessible from all tabs */}
                     {/*<RootStack.Screen name="ExerciseDetails" component={ExerciseDetails} />*/}
                     {/*<RootStack.Screen name="TimerScreen" component={TimerScreen} />*/}
-                </RootStack.Navigator>
+                </Stack.Navigator>
 
         </NavigationContainer>
         </PaperProvider>
@@ -110,10 +107,3 @@ export default function App() {
     );
 }
 
-const styles = StyleSheet.create({
-    container: {
-        flex: 1,
-        alignItems: 'center',
-        justifyContent: 'center',
-    },
-});

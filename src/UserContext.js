@@ -78,13 +78,13 @@ import JWT from 'expo-jwt';
 import { secretKey } from './Constants';
 
 export const UserContext = createContext(
-//     {
-//     myCurrentUserObject: {},
-//     setUser: () => {},
-//     token: '',
-//     setToken: () => {},
-//     restoreUser: () => {},
-// }
+    {
+    myCurrentUserObject: {},
+    setUser: () => {},
+    token: '',
+    setToken: () => {},
+    restoreUser: () => {},
+}
 );
 
 export const UserProvider = ({ children }) => {
