@@ -7,7 +7,7 @@ import {ImageBackground} from "expo-image";
 const { width } = Dimensions.get('window');
 // responsive width
 
-const EquipmentsImages = ({ equip }) => {
+const SellerScroller = ({ equip }) => {
     const navigation = useNavigation();
     const IMAGE_WIDTH = width * 0.20;  // 65% of screen
     const IMAGE_HEIGHT = IMAGE_WIDTH * 0.35; // keep a good proportion
@@ -23,15 +23,17 @@ const EquipmentsImages = ({ equip }) => {
 
             {/* IMAGE */}
                 <ImageBackground
-                    source={equip.imagePath}
+                    source={equip.image_url}
                     style={{
                         marginTop: 10,
                         borderWidth: 4,
-                        borderColor: '#130101',
+                        borderColor: '#e1a614',
                         borderRadius: 10,
                         width: IMAGE_WIDTH*2,
-                        height: IMAGE_HEIGHT*2,
+                        height: IMAGE_HEIGHT*3,
                         resizeMode: 'cover',
+                        overflow: 'hidden',
+                        elevation:10,
                         marginLeft: 10, // ✅ 7+ spacing
                     }}
                 />
@@ -56,5 +58,5 @@ const EquipmentsImages = ({ equip }) => {
     );
 };
 
-export default EquipmentsImages;
+export default SellerScroller;
 

@@ -1,242 +1,229 @@
-import React, {useContext, useEffect, useState} from 'react';
-import {StyleSheet, View, Text, ImageBackground, Button, Image,FlatList} from 'react-native';
-import { TouchableOpacity } from 'react-native';
-
-import { LinearGradient } from 'expo-linear-gradient';
+import React, { useState, useRef } from "react";
+import Modal from 'react-native-modal'
+import {View, Text, Image, TouchableOpacity, ScrollView, Animated, Dimensions} from "react-native";
+import SettingsScreen from "./Settings";
+import {useNavigation} from "@react-navigation/native";
 import {Ionicons} from "@expo/vector-icons";
-import {Divider} from "react-native-paper";
-import {UserContext} from "../UserContext";
-import {fetchFavourites} from "../ApiServices";
-import AsyncStorage from "@react-native-async-storage/async-storage";
-import axios from "axios";
-import {BaseURL} from "../Constants";
 
-// Custom components
-export default function ProfileScreen({navigation}) {
-    const [savedWorkout, setSaved] = useState([]);
-    const { myCurrentUserObject, setUser, token } = useContext(UserContext);
+const { height } = Dimensions.get('window');
+// Configuration for the animation
+const HEADER_MAX_HEIGHT = 280;
+const HEADER_MIN_HEIGHT = 100;
+const PROFILE_IMAGE_MAX_HEIGHT = 95;
+const PROFILE_IMAGE_MIN_HEIGHT = 50;
 
-    useEffect(() => {
-        if (token) {
-            try {
-                fetchFavourites(setSaved, token);
-            } catch (error) {
-                console.error("Error from ", error);
-            }
-        }
-    }, [token]);
+export default function ProfileScreen() {
+    const [activeTab, setActiveTab] = useState("home");
+     const [open, setOpen] = useState(false);
 
-    const handlePress = async (touchedWorkout) => {
-        const storedToken = await AsyncStorage.getItem('auth_token');
-        try {
-            const response = await axios.get(`${BaseURL}/Favourites/GetUserFavourites`, {
-                headers: { Authorization: `Bearer ${storedToken}` },
-            });
-            console.log('Saved exercises are ', response.data);
-            setSaved(response.data);
-        } catch (error) {
-            console.error('Error fetching favourites:', error);
-        }
+    // Animation value reference
+    const scrollY = useRef(new Animated.Value(0)).current;
 
-    };
-    const FavoriteItem = ({ item }) => (
-        <TouchableOpacity
-            style={{
-                width: '46%',
-                margin: '2%',
-                backgroundColor: '#fff',
-                borderRadius: 16,
-                overflow:'auto',
-            }}
+    // 1. Header Height Interpolation
+    const headerHeight = scrollY.interpolate({
+        inputRange: [0, HEADER_MAX_HEIGHT - HEADER_MIN_HEIGHT],
+        outputRange: [HEADER_MAX_HEIGHT, HEADER_MIN_HEIGHT],
+        extrapolate: 'clamp'
+    });
 
-            onPress={() => navigation.navigate(
-                'ExerciseDetails',
-                {time: `${Date.now()}`,
-                    exercise: item     })
-            }
-        >
+    // 2. Profile Image Size Interpolation
+    const profileImageHeight = scrollY.interpolate({
+        inputRange: [0, HEADER_MAX_HEIGHT - HEADER_MIN_HEIGHT],
+        outputRange: [PROFILE_IMAGE_MAX_HEIGHT, PROFILE_IMAGE_MIN_HEIGHT],
+        extrapolate: 'clamp'
+    });
 
-            <ImageBackground
-                source={{ uri: item.localImagePath }}
-                resizeMode="contain"
-                style={{
-                    height: 250,
-                    width: '100%',
-                }}
-            />
-            <View style={{ padding: 10 }}>
-                <Text
-                    style={{
-                        fontSize: 14,
-                        textAlign: 'center',
-                        color: 'blue',
-                    }}
-                >
-                    <Text style={{ color: 'indigo' }}>
-                        {item.target.charAt(0).toUpperCase() + item.target.slice(1)}
+    // 3. Profile Image Margin/Position Interpolation (to move it up slightly)
+    const profileImageMarginTop = scrollY.interpolate({
+        inputRange: [0, HEADER_MAX_HEIGHT - HEADER_MIN_HEIGHT],
+        outputRange: [20, 5],
+        extrapolate: 'clamp'
+    });
+
+    // 4. Opacity for items we want to hide when scrolling up (Location text, etc)
+    const headerContentOpacity = scrollY.interpolate({
+        inputRange: [0, (HEADER_MAX_HEIGHT - HEADER_MIN_HEIGHT) / 2],
+        outputRange: [1, 0],
+        extrapolate: 'clamp'
+    });
+
+    const renderTabContent = () => {
+        if (activeTab === "home") {
+            return (
+                <View style={{ padding: 20 }}>
+                    <Text style={{ fontSize: 20, fontWeight: "700", marginBottom: 20 }}>
+                        New
                     </Text>
-
-                    {'  |  '}
-
-                    {item.equipment.charAt(0).toUpperCase() + item.equipment.slice(1)}
-                </Text>
-            </View>
-        </TouchableOpacity>);
-
-    return (
-        <View style={{
-            flex: 1,
-         }}>
-            <ImageBackground
-                resizeMode="cover"
-                source={require('./Bands.jpg')}
-                style={{flex:1}}
-            >
-                <View style={{flexDirection:"row" , padding: 20,marginTop:30,justifyContent:"space-between"}}>
-                    <View style={{ flex: 1, justifyContent: 'center', backgroundColor:'cyan'}}>
-                        <Text style={{
-                            color: '#010712',
-                             fontSize: 25,
-                            letterSpacing: 0.9,
-                            marginBottom: 10,
-                            fontFamily: 'casual',
-
-                        }}>{myCurrentUserObject.username}</Text>
-                        <View style={{}}>
-                            <Text style={{
-                                fontFamily: 'casual',
-                                fontSize: 16,
-                                marginBottom: 3}}>{myCurrentUserObject.email}</Text>
-                            <Text style={{
-                                fontSize: 16,                                fontFamily: 'casual',
-                            }}>React Native Starter</Text>
+                    <View style={{ flexDirection: "row", justifyContent: "space-between", alignItems: "center", marginBottom: 30 }}>
+                        <Text style={{ fontSize: 28 }}>⬅</Text>
+                        <Image source={{ uri: "https://i.ibb.co/T0pZqZp/chicken.png" }} style={{ width: 70, height: 70, borderRadius: 50, backgroundColor: "#fff" }} />
+                        <Image source={{ uri: "https://i.ibb.co/CvQjV9K/salad.png" }} style={{ width: 70, height: 70, borderRadius: 50, backgroundColor: "#fff" }} />
+                        <Image source={{ uri: "https://i.ibb.co/T0pZqZp/chicken.png" }} style={{ width: 70, height: 70, borderRadius: 50, backgroundColor: "#fff" }} />
+                        <Text style={{ fontSize: 28 }}>➡</Text>
+                    </View>
+                    <Text style={{ textAlign: "center", fontSize: 20, fontWeight: "700", marginBottom: 100 }}>
+                        Top Sales
+                    </Text>
+                    {/* Add height to allow scrolling to test animation */}
+                    <View style={{height: 500}} />
+                </View>
+            );
+        }
+        if (activeTab === "comments") {
+            return (
+                <View style={{ padding: 20 }}>
+                    <Text style={{ fontSize: 22, fontWeight: "700" }}>Comments</Text>
+                    {[1,2,3,4,5].map(i => (
+                        <View key={i} style={{marginBottom: 20}}>
+                            <Text style={{ marginTop: 20 }}>• “Best food I ever tasted!”</Text>
+                        </View>
+                    ))}
+                </View>
+            );
+        }
+        if (activeTab === "cart") {
+            return (
+                <View style={{ padding: 20 }}>
+                    <Text style={{ fontSize: 22, fontWeight: "700" }}>Cart</Text>
+                    <View style={{ marginTop: 20, flexDirection: "row", alignItems: "center", padding: 15, backgroundColor: "#fff", borderRadius: 12 }}>
+                        <Image source={{ uri: "https://i.ibb.co/T0pZqZp/chicken.png" }} style={{ width: 60, height: 60, borderRadius: 10, marginRight: 15 }} />
+                        <View>
+                            <Text style={{ fontWeight: "700", fontSize: 16 }}>Grilled Chicken</Text>
+                            <Text style={{ marginTop: 5 }}>$45</Text>
                         </View>
                     </View>
-                    <View style={{ flexDirection: 'row' ,backgroundColor:'blue'}}>
-                        <TouchableOpacity  onPress={handlePress}>
-                            <Image style={{
-                                borderRadius: 90,
-                                height: 100,
-                                width: 100,
-                                backgroundColor: 'red',
-                                marginLeft:5
-                            }}/>
-                            <Ionicons  style={{alignSelf:'flex-end'}} name="person" size={15} color="indigo" />
-
-                        </TouchableOpacity>
-                    </View>
+                    <View style={{height: 500}} />
                 </View>
-            </ImageBackground>
+            );
+        }
+    };
+const navigation=useNavigation();
+    return (
+        <View style={{ flex: 1,                    backgroundColor: "#dfb07d",
+        }}>
 
-            <View style={{
-                flex: 3,
-                position: 'relative',
-                backgroundColor:'purple'
-            }}>
-                <LinearGradient
-                    start={{ x: 0, y: 1 }}
-                    end={{ x: 1, y: 0 }}
-                    colors={['#6a11cb', '#6946d8']}
+            {/* ANIMATED DARK HEADER */}
+            <Animated.View
+                style={{
+                    height: headerHeight, // Dynamic Height
+                     alignItems: "center",
+                    paddingTop: 50,
+                    overflow: 'hidden',
+                    zIndex: 1
+                }}
+            >
+                {/* Fixed position buttons */}
+                <TouchableOpacity style={{ position: "absolute", left: 20, top: 50, zIndex: 10 }}
+                onPress={()=>navigation.goBack()}>
+                    <Text style={{ color: "#fff", fontSize: 26 }}>←</Text>
+                </TouchableOpacity>
+
+                <TouchableOpacity  onPress={() =>{
+                    setOpen(true)
+                    navigation.navigate("Settings",{});
+                }} style={{ position: "absolute", right: 20, top: 50, zIndex: 10,elevation:10,shadowColor:'green' }}>
+                    <Ionicons name="settings-outline" size={28} color="black" />
+                </TouchableOpacity>
+                                {/* Animated Image */}
+                <Animated.Image
+                    source={{ uri: "https://i.pravatar.cc/300" }}
                     style={{
-                        height: 60,
-                        flexDirection: 'row',
+                        width: profileImageHeight,
+                        height: profileImageHeight,
+                        borderRadius: 100,
+                        marginTop: profileImageMarginTop,
+                         borderWidth: 3,
+                        borderColor: "#41d121",
                     }}
-                >
+                />
 
-                    <TouchableOpacity style={{
-                        flex: 1,
-                        alignItems: 'center',
-                        justifyContent: 'center',
-                        padding: 10,
-                    }}>
-                        <Text style={{
-                            color: '#ffffff',
-                            fontFamily: 'System',
-                            fontSize: 14,
-                        }}> {savedWorkout.length}</Text>
-                        <Text style={{
-                            color: '#ffffff',
-                            fontFamily: 'System',
-                            fontSize: 14,
-                        }}>Projects</Text>
+                <Text style={{ color: "#fff", fontSize: 22, marginTop: 15, fontWeight: "700" }}>
+                    Dan DiFelice
+                </Text>
+
+                {/* This text will fade out on scroll */}
+                <Animated.Text style={{ color: "rgba(5,0,0,0.91)", marginTop: 5, opacity: headerContentOpacity }}>
+                    Greater New York
+                </Animated.Text>
+                {/*<Modal*/}
+                {/*                isVisible={open}*/}
+                {/*                onBackdropPress={() => setOpen(false)}*/}
+                {/*                onSwipeComplete={() => setOpen(false)}*/}
+                {/*                swipeDirection="down"*/}
+                {/*                style={{*/}
+                {/*                    justifyContent: "flex-end",*/}
+                {/*                    margin: 0,*/}
+                {/*                    backgroundColor:'red'*/}
+                {/*                }}*/}
+                {/*            >*/}
+                {/*                <View*/}
+                {/*                    style={{*/}
+                {/*                        backgroundColor: "#2e8a19",*/}
+                {/*                        height: "80%",*/}
+                {/*                        borderTopLeftRadius: 25,*/}
+                {/*                        borderTopRightRadius: 25,*/}
+                {/*                        paddingTop: 20,*/}
+                {/*                    }}*/}
+                {/*                >*/}
+                {/*                    /!* Close button *!/*/}
+                {/*                    <TouchableOpacity*/}
+                {/*                        onPress={() => setOpen(false)}*/}
+                {/*                        style={{ alignSelf: "flex-end", paddingRight: 20 }}*/}
+                {/*                    >*/}
+                {/*                        <Text style={{ fontSize: 25 }}>✕</Text>*/}
+                {/*                    </TouchableOpacity>*/}
+
+                {/*                    /!* Scrollable content *!/*/}
+                {/* */}
+                {/*                </View>*/}
+                {/*            </Modal>*/}
+
+            </Animated.View>
+
+            {/* SCROLLABLE CONTENT (The Yellow Part) */}
+            <ScrollView
+                style={{
+                    flex: 1,
+                    backgroundColor: "rgba(60,30,30,0.96)",
+                     borderTopLeftRadius: 40,
+                    borderTopRightRadius: 40
+                 }}
+
+                // Attach scroll event to animation
+                scrollEventThrottle={16}
+                onScroll={Animated.event(
+                    [{ nativeEvent: { contentOffset: { y: scrollY } } }],
+                    { useNativeDriver: false } // false because we animate layout properties like height
+                )}
+            >
+                {/* TAB BAR */}
+                <View style={{ flexDirection: "row", justifyContent: "space-around" ,marginTop:20
+
+                }}>
+                    {/* HOME TAB */}
+                    <TouchableOpacity onPress={() => setActiveTab("home")} style={{ alignItems: "center" }}>
+                        <Text style={{ fontSize: 17 }}>🏠</Text>
+                        <Text style={{ marginTop: 3, fontWeight: activeTab === "home" ? "700" : "400", textDecorationLine: activeTab === "home" ? "underline" : "none" }}>Home</Text>
                     </TouchableOpacity>
 
-                    <TouchableOpacity style={{
-                        flex: 1,
-                        alignItems: 'center',
-                        justifyContent: 'center',
-                        padding: 10,
-                    }}>
-                        <Text style={{
-                            color: '#ffffff',
-                            fontFamily: 'System',
-                            fontSize: 14,
-                        }}>1.3k</Text>
-                        <Text style={{
-                            color: '#ffffff',
-                            fontFamily: 'System',
-                            fontSize: 14,
-                        }}>Followers</Text>
+                    {/* COMMENTS TAB */}
+                    <TouchableOpacity onPress={() => setActiveTab("comments")} style={{ alignItems: "center" }}>
+                        <Text style={{ fontSize: 17 }}>💬</Text>
+                        <Text style={{ marginTop: 3, fontWeight: activeTab === "comments" ? "700" : "400", textDecorationLine: activeTab === "comments" ? "underline" : "none" }}>Comments</Text>
                     </TouchableOpacity>
 
-                    <TouchableOpacity style={{
-                        flex: 1,
-                        alignItems: 'center',
-                        justifyContent: 'center',
-                        padding: 10,
-                    }}>
-                        <Text style={{
-                            color: '#ffffff',
-                            fontFamily: 'System',
-                            fontSize: 14,
-                        }}>816</Text>
-                        <Text style={{
-                            color: '#ffffff',
-                            fontFamily: 'System',
-                            fontSize: 14,
-                        }}>Following</Text>
+                    {/* CART TAB */}
+                    <TouchableOpacity onPress={() => setActiveTab("cart")} style={{ alignItems: "center" }}>
+                        <Text style={{ fontSize: 17 }}>🛒</Text>
+                        <Text style={{ marginTop: 3, fontWeight: activeTab === "cart" ? "700" : "400", textDecorationLine: activeTab === "cart" ? "underline" : "none" }}>Cart</Text>
                     </TouchableOpacity>
-                </LinearGradient>
-                <View style={{flex: 4,backgroundColor:'green'}}>
+                </View>
 
-
-
-                    <FlatList
-
-                        data={savedWorkout}
-                        renderItem={FavoriteItem}
-                        keyExtractor={(item) => item.name || item.gifUrl}
-                        numColumns={2}
-                        columnWrapperStyle={{
-                            justifyContent: 'space-between',
-                        }}
-                        contentContainerStyle={{
-                            paddingHorizontal: 10,
-                            paddingBottom: 20,
-                            backgroundColor:'green',
-
-                        }}
-                        ListHeaderComponent={() => (
-                            <View style={{backgroundColor:'green'}}>
-                                <Text
-                                    style={{
-                                        fontSize: 24,
-                                        fontWeight: 'bold',
-                                        marginBottom: 16,
-                                        marginLeft: 8,
-                                        color: '#fff',
-                                        flex:2
-                                    }}
-                                >
-                                    {savedWorkout.length} Saved workouts
-                                </Text>
-                                <Divider style={{ marginBottom: 16 }} />
-                            </View>
-                        )}
-                    /></View>
-
-            </View>
-
+                {/* Content below tab bar */}
+                <View style={{ minHeight: height }}>
+                    {renderTabContent()}
+                </View>
+            </ScrollView>
         </View>
     );
 }

@@ -1,48 +1,52 @@
 import React from 'react';
 import { View, Text, FlatList, Dimensions } from 'react-native';
-import { Equipments } from '../Constants';
-import EquipmentsImages from './EquipmentsImages';
+import {Equipments, meals} from '../Constants';
+import EquipmentsImages from './MealsScroller';
  import {ScrollView} from "react-native-virtualized-view";
 
 //const { width } = Dimensions.get('window');
 
-const MyBanner = () => {
+const Meal = () => {
 
     return (
         <View
             style={{
                 marginHorizontal: 10,
                 marginTop: 20,
-                marginBottom: 40,
+                elevation:80
+
             }}
         >
-            <Text
+             <Text
                 style={{
-                    fontSize: 16,
+                    fontSize: 20,
                     fontWeight: 'bold',
                     marginLeft: 10,
+                    fontStyle: 'italic',
                     fontFamily:"casual",
                     marginBottom: 5, // ✅ closer to images
                 }}
             >
                 Choose
-                <Text style={{ color: 'red' }}> Seller</Text>
+                <Text style={{ color: 'red' }}> Meal</Text>
             </Text>
 
             {/* LIST */}
             <FlatList
-                data={Equipments}
+                data={meals}
                 keyExtractor={(item) => item.id || item.name}
                 horizontal
-                 showsHorizontalScrollIndicator={false}
+                showsHorizontalScrollIndicator={false}
                 contentContainerStyle={{
                     paddingLeft: 5,
                 }}
-                renderItem={({ item }) => <EquipmentsImages equip={item} />}
+                renderItem={({ item }) =>
+                    <EquipmentsImages equip={item}
+                    />}
             />
 
-        </View>
+         </View>
     );
 };
 
-export default MyBanner;
+export default Meal;

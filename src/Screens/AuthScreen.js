@@ -167,7 +167,7 @@ const AuthScreen = () => {
 
             <TextInput label="Username"
                        right={<TextInput.Icon icon="account" />}
-                       value={userName} onChangeText={setUserName}  style={{ marginBottom: 10 }} />
+                       value={userName} onChangeText={setUserName}  style={{ marginBottom: 10 ,borderRadius:30}} />
             <HelperText theme={{ colors: { primary: 'green' } }}  type="error" visible={userNameHasErrors()}>
                 Username is invalid!
             </HelperText>

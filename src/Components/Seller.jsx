@@ -1,51 +1,49 @@
 import React from 'react';
 import { View, Text, FlatList, Dimensions } from 'react-native';
-import { Equipments } from '../Constants';
-import EquipmentsImages from './EquipmentsImages';
+import {Equipments, restaurants} from '../Constants';
+import MealsScroller from './MealsScroller';
  import {ScrollView} from "react-native-virtualized-view";
-import MyMainScrollerScroller from "./MyMainScrollerScroller";
+import SellerScroller from "./SellerScroller";
 
 //const { width } = Dimensions.get('window');
 
-const MyMainScroller = () => {
+const ChooseSeller = () => {
 
     return (
         <View
             style={{
                 marginHorizontal: 10,
                 marginTop: 20,
+                marginBottom: 40,
             }}
         >
             <Text
                 style={{
-                    fontSize: 20,
+                    fontSize: 16,
                     fontWeight: 'bold',
                     marginLeft: 10,
-                    fontStyle: 'italic',
                     fontFamily:"casual",
                     marginBottom: 5, // ✅ closer to images
                 }}
             >
                 Choose
-                <Text style={{ color: 'red' }}> Market</Text>
+                <Text style={{ color: 'red' }}> Seller</Text>
             </Text>
 
             {/* LIST */}
             <FlatList
-                data={Equipments}
+                data={restaurants}
                 keyExtractor={(item) => item.id || item.name}
                 horizontal
-                showsHorizontalScrollIndicator={false}
+                 showsHorizontalScrollIndicator={false}
                 contentContainerStyle={{
                     paddingLeft: 5,
                 }}
-                renderItem={({ item }) =>
-                    <MyMainScrollerScroller equip={item}
-                    />}
+                renderItem={({ item }) => <SellerScroller equip={item} />}
             />
 
         </View>
     );
 };
 
-export default MyMainScroller;
+export default ChooseSeller;

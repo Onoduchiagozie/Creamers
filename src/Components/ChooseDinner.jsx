@@ -1,20 +1,17 @@
-
-
 import React from 'react';
 import { FlatList, Text, View } from 'react-native';
-import { BodyParts } from '../Constants';
+import { BodyParts,restaurants } from '../Constants';
 import { useNavigation } from '@react-navigation/native';
-import BodyPartsImages from './BodyPartsImages';
+import Dinner from './Dinner';
 
-const BodyPartsWorkout = () => {
+const ChooseDinner = () => {
     const navigation = useNavigation();
 
     return (
         <View style={{
-             backgroundColor:'green',
-            paddingHorizontal: 10,
-            justifyContent: 'space-between',
-            alignItems: 'space-between'
+             justifyContent:'center',
+            alignItems: 'center',
+
         }}>
 
             {/* TITLE */}
@@ -35,20 +32,19 @@ const BodyPartsWorkout = () => {
 
             <View
                 style={{
-                    alignItems: 'center',
-                    justifyContent: 'center',
                     marginTop: 10,
-                    backgroundColor:'blue'
-                 }}
+                    marginBottom: 100,
+                    paddingHorizontal:40
+                    }}
             >
                 <FlatList
-                    data={BodyParts}
+                    data={restaurants}
                     keyExtractor={(item) => item.id || item.name}
                     numColumns={2}
                     showsVerticalScrollIndicator={false}
 
                     renderItem={({ item }) => (
-                        <BodyPartsImages givenImage={item} />
+                        <Dinner givenImage={item} />
                     )}
                 />
             </View>
@@ -57,5 +53,5 @@ const BodyPartsWorkout = () => {
     );
 };
 
-export default BodyPartsWorkout;
+export default ChooseDinner;
 

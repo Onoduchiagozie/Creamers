@@ -7,7 +7,7 @@ import {ImageBackground} from "expo-image";
 const { width } = Dimensions.get('window');
 // responsive width
 
-const MainScrollerScroller = ({ equip }) => {
+const EateryScroller = ({ equip }) => {
     const navigation = useNavigation();
     const IMAGE_WIDTH = width * 0.20;  // 65% of screen
     const IMAGE_HEIGHT = IMAGE_WIDTH * 0.35; // keep a good proportion
@@ -23,17 +23,20 @@ const MainScrollerScroller = ({ equip }) => {
 
                 {/* IMAGE */}
                 <ImageBackground
-                    source={equip.imagePath}
+                    source={{uri:equip.logo_url}}
                     style={{
                         marginTop: 10,
                         borderWidth: 4,
-                        borderColor: '#130101',
-                        borderRadius: 100,
+                        borderColor: '#eeba10',
+                        // borderRadius: 100,
                         width: IMAGE_WIDTH,
                         overflow: 'hidden',
-                        height: IMAGE_HEIGHT*2.9,
+                        height: IMAGE_HEIGHT*2.8,
                         resizeMode: 'cover',
-                        marginLeft: 10, // ✅ 7+ spacing
+                        marginLeft: 10,
+                        elevation:8,
+                        borderTopLeftRadius:25,
+                        borderBottomRightRadius:30
                     }}
                 />
 
@@ -57,5 +60,5 @@ const MainScrollerScroller = ({ equip }) => {
     );
 };
 
-export default MainScrollerScroller;
+export default EateryScroller;
 

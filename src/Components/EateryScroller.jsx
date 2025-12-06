@@ -1,21 +1,22 @@
 import React from 'react';
 import { View, Text, FlatList, Dimensions } from 'react-native';
-import { Equipments } from '../Constants';
-import EquipmentsImages from './EquipmentsImages';
+import {eateries, restaurants} from '../Constants';
+import MealsScroller from './MealsScroller';
  import {ScrollView} from "react-native-virtualized-view";
+import EateryScroller from "./Eater";
 
 //const { width } = Dimensions.get('window');
 
-const ExerciseCategory = () => {
+const Eatery = () => {
 
     return (
         <View
             style={{
                 marginHorizontal: 10,
                 marginTop: 20,
-             }}
+            }}
         >
-             <Text
+            <Text
                 style={{
                     fontSize: 20,
                     fontWeight: 'bold',
@@ -26,25 +27,26 @@ const ExerciseCategory = () => {
                 }}
             >
                 Choose
-                <Text style={{ color: 'red' }}> Meal</Text>
+                <Text style={{ color: 'red' }}> Eatery</Text>
             </Text>
 
             {/* LIST */}
             <FlatList
-                data={Equipments}
+                data={eateries}
                 keyExtractor={(item) => item.id || item.name}
                 horizontal
+                pagingEnabled={true}
                 showsHorizontalScrollIndicator={false}
                 contentContainerStyle={{
                     paddingLeft: 5,
                 }}
                 renderItem={({ item }) =>
-                    <EquipmentsImages equip={item}
+                    <EateryScroller equip={item}
                     />}
             />
 
-         </View>
+        </View>
     );
 };
 
-export default ExerciseCategory;
+export default Eatery;

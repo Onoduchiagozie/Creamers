@@ -1,6 +1,3 @@
-
-
-
 import {React,  useContext, useRef} from 'react';
 import { View, Text, TouchableOpacity } from 'react-native';
 import { ImageBackground } from 'expo-image';
