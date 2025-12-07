@@ -18,7 +18,7 @@ const HomeScreenTwo = () =>  {
     const fetchMeals = async () => {
         try {
             const res = await axios.get(`${BaseURL}/Product/GetAllProducts`);
-            console.log("rrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrr",res.data);
+            console.log("all product",res.data);
             setMeals(res.data); // assuming API returns array of meals
         } catch (error) {
             console.log('Error fetching meals:', error.response?.data || error.message);
@@ -130,7 +130,7 @@ const HomeScreenTwo = () =>  {
                 <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginVertical: 20 }}>
                     <Text style={{ fontSize: 18, fontWeight: 'bold' }}>Popular Items</Text>
                 </View>
-                <View style={{ flexDirection: 'row', justifyContent: 'space-between' ,marginVertical:30}}>
+                <View style={{ flexDirection: 'row', justifyContent: 'space-between', marginVertical:30}}>
 
                     <View style={{ flexDirection: 'row', flexWrap: 'wrap', justifyContent: 'space-between', marginVertical: 30 }}>
                         {meals.map((meal, index) => (
@@ -138,8 +138,8 @@ const HomeScreenTwo = () =>  {
                                 key={index}
                                 onPress={() => navigation.navigate('FoodDetail', { meal:meal })}
                                 style={{
-                                    width: '48%',
-                                    backgroundColor: '#fff',
+                                    width: '45%',
+                                    backgroundColor: '#eae0e0',
                                     marginBottom: 20,
                                     borderRadius: 20,
                                     padding: 10,

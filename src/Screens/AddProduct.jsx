@@ -16,6 +16,7 @@ import { useNavigation } from "@react-navigation/native";
 import {BaseURL} from "../Constants";
 import axios from "axios";
 import uuid from 'react-native-uuid';
+import api from "../api";
 
 export default function AddProductScreen() {
     const [name, setName] = useState("");
@@ -50,21 +51,23 @@ export default function AddProductScreen() {
             return;
         }
 
+
+
+
         const payload = {
-            Id:uuid.v4(),
-             Name: name,
+              Name: name,
             Cost: Number(price),
             Description: description,
-            Location: description,
-            Seller: description,
-              ProductImageBase64: imageBase64 ? imageBase64 : "",
+               ProductImageBase64: imageBase64 ? imageBase64 : "",
+            Location: "Lagos",
+
         };
 
         setLoading(true);
 
 
         try {
-            const res = await axios.post(`${BaseURL}/Product/AddProduct`, payload, {
+            const res = await api.post(`${BaseURL}/Product/AddProduct`, payload, {
                 headers: { "Content-Type": "application/json" },
             });
 
@@ -91,13 +94,13 @@ export default function AddProductScreen() {
             style={{ flex: 1, backgroundColor: "#fff" }}
             behavior={Platform.OS === "ios" ? "padding" : undefined}
         >
-            <ScrollView contentContainerStyle={{ padding: 20 }}>
+            <ScrollView contentContainerStyle={{ padding: 20,marginBottom:30 }}>
                 {/* Back Button */}
                 <TouchableOpacity
                     style={{ marginBottom: 20 }}
                     onPress={() => navigation.goBack()}
                 >
-                    <Text style={{ color: "#ca0c0c", fontSize: 36 }}>← Back</Text>
+                    <Text style={{ color: "#ca0c0c", fontSize: 36 }}>←</Text>
                 </TouchableOpacity>
 
                 <Text style={{ fontSize: 24, fontWeight: "700", marginBottom: 20 }}>
@@ -190,6 +193,7 @@ export default function AddProductScreen() {
                         alignItems: "center",
                         flexDirection: "row",
                         justifyContent: "center",
+                        marginBottom:50
                     }}
                     disabled={loading}
                 >

@@ -1,9 +1,12 @@
-import React, { useState, useRef } from "react";
+import React, {useState, useRef, useEffect} from "react";
 import Modal from 'react-native-modal'
-import {View, Text, Image, TouchableOpacity, ScrollView, Animated, Dimensions} from "react-native";
+import {View, Text, TouchableOpacity, ScrollView, Animated, Dimensions, Alert} from "react-native";
 import SettingsScreen from "./Settings";
 import {useNavigation} from "@react-navigation/native";
 import {Ionicons} from "@expo/vector-icons";
+import api from "../api";
+import {Image, ImageBackground} from 'expo-image';
+import {BaseURL} from "../Constants";
 
 const { height } = Dimensions.get('window');
 // Configuration for the animation
@@ -13,8 +16,33 @@ const PROFILE_IMAGE_MAX_HEIGHT = 95;
 const PROFILE_IMAGE_MIN_HEIGHT = 50;
 
 export default function ProfileScreen() {
+
+
     const [activeTab, setActiveTab] = useState("home");
      const [open, setOpen] = useState(false);
+     const [myProducts, setMyProducts] = useState([]);
+
+
+    useEffect(() => {
+        fetchMeals();
+    }, []);
+
+const gotodetail = (item) => {
+    console.log("go to detail item",item);
+  navigation.navigate("FoodDetail",{meal:item})
+}
+    const fetchMeals = async () => {
+        try {
+
+             const res = await api.get('/Product/GetAllSellerProducts');
+            console.log("Profile Screen get farmer product load", res.data);
+            setMyProducts(res.data);
+
+        } catch (error) {
+            console.log('Error fetching meals:', error.response?.data || error.message);
+        }
+    };
+
 
     // Animation value reference
     const scrollY = useRef(new Animated.Value(0)).current;
@@ -46,6 +74,70 @@ export default function ProfileScreen() {
         outputRange: [1, 0],
         extrapolate: 'clamp'
     });
+
+
+    async function deleteProduct(id) {
+        try {
+
+            console.log('Deleting product with ID:', id);
+
+            // Correct syntax: use parentheses, not backticks for function call
+            const url = `${BaseURL}/Product/${id}`;
+            console.log('DELETE URL:', url);
+            console.log('Product ID:', id);
+
+            const res = await api.delete(url, {
+                headers: { "Content-Type": "application/json" },
+            });
+
+            Alert.alert("Success", res.data.message || "Product deleted successfully");
+
+            // Optional: Refresh your product list here
+            // fetchProducts();
+
+            return res.data;
+        } catch (error) {
+            console.log("API Error:", error.response?.data || error.message);
+            console.log("API Error:", error);
+            Alert.alert(
+                "Error",
+                error.response?.data?.message || "Failed to delete product"
+            );
+            throw error;
+        }
+    }
+
+    const handleDelete = async (productId) => {
+        Alert.alert(
+            "Confirm Delete",
+            "Are you sure you want to delete this product?",
+            [
+                {
+                    text: "Cancel",
+                    style: "cancel"
+                },
+                {
+                    text: "Delete",
+                    style: "destructive",
+                    onPress: async () => {
+                        try {
+                            console.log('Deleting product with ID IN HANDLE DELETE FUNCTION:', productId);
+                            await deleteProduct(productId);
+                            // Refresh your list or navigate away
+                        } catch (error) {
+                            // Error already handled in deleteProduct
+                        }
+                    }
+                }
+            ]
+        );
+
+    }
+
+
+
+
+
 
     const renderTabContent = () => {
         if (activeTab === "home") {
@@ -81,25 +173,65 @@ export default function ProfileScreen() {
                 </View>
             );
         }
-        if (activeTab === "cart") {
+        if (activeTab === "Basket") {
             return (
                 <View style={{ padding: 20 }}>
-                    <Text style={{ fontSize: 22, fontWeight: "700" }}>Cart</Text>
-                    <View style={{ marginTop: 20, flexDirection: "row", alignItems: "center", padding: 15, backgroundColor: "#fff", borderRadius: 12 }}>
-                        <Image source={{ uri: "https://i.ibb.co/T0pZqZp/chicken.png" }} style={{ width: 60, height: 60, borderRadius: 10, marginRight: 15 }} />
-                        <View>
-                            <Text style={{ fontWeight: "700", fontSize: 16 }}>Grilled Chicken</Text>
-                            <Text style={{ marginTop: 5 }}>$45</Text>
+                    <Text style={{ fontSize: 22, fontWeight: "700" }}>Added Product</Text>
+
+                    {myProducts.map((item, index) => (
+                        <View
+                            key={index}
+                            style={{
+                                marginTop: 20,
+                                flexDirection: "row",
+                                alignItems: "center",
+                                padding: 15,
+                                backgroundColor: "#9c9191",
+                                borderRadius: 12
+                            }}
+                        >
+                            <ImageBackground
+
+                                source={{ uri: `${BaseURL}${item.productImageBase64}` }}
+                                style={{ width: 60, height: 60, borderRadius: 50, marginRight: 15 }}
+                            />
+
+                            {/* MAIN ROW THAT SPLITS LEFT AND RIGHT */}
+                            <View style={{ flexDirection: "row", justifyContent: "space-between", flex: 1 }}>
+
+                                {/* LEFT: NAME + PRICE */}
+                                <TouchableOpacity onPress={() => gotodetail(item)}>
+                                    <Text style={{ fontWeight: "700", fontSize: 16 }}>
+                                        {item.name}
+                                    </Text>
+
+                                    <Text style={{ marginTop: 5 }}>
+                                        ${item.cost}
+                                    </Text>
+                                </TouchableOpacity>
+
+                                {/* RIGHT: DELETE BUTTON */}
+                                <TouchableOpacity
+                                    style={{ height: 35, width: 35, alignItems: "center" }}
+                                    onPress={() => handleDelete(item.id)}
+                                >
+                                    <Text style={{ fontWeight: "700", fontSize: 26 }}>🗑</Text>
+                                </TouchableOpacity>
+
+                            </View>
+
                         </View>
-                    </View>
-                    <View style={{height: 500}} />
-                </View>
+
+                    ))}
+
+                 </View>
             );
         }
+
     };
 const navigation=useNavigation();
     return (
-        <View style={{ flex: 1,                    backgroundColor: "#dfb07d",
+        <View style={{ flex: 1,                    backgroundColor: "#ede7d8",
         }}>
 
             {/* ANIMATED DARK HEADER */}
@@ -114,7 +246,7 @@ const navigation=useNavigation();
             >
                 {/* Fixed position buttons */}
                 <TouchableOpacity style={{ position: "absolute", left: 20, top: 50, zIndex: 10 }}
-                onPress={()=>navigation.goBack()}>
+                                  onPress={()=>navigation.goBack()}>
                     <Text style={{ color: "#fff", fontSize: 26 }}>←</Text>
                 </TouchableOpacity>
 
@@ -137,7 +269,7 @@ const navigation=useNavigation();
                     }}
                 />
 
-                <Text style={{ color: "#fff", fontSize: 22, marginTop: 15, fontWeight: "700" }}>
+                <Text style={{ color: "rgba(5,0,0,0.91)", fontSize: 22, marginTop: 15, fontWeight: "700" }}>
                     Dan DiFelice
                 </Text>
 
@@ -213,9 +345,9 @@ const navigation=useNavigation();
                     </TouchableOpacity>
 
                     {/* CART TAB */}
-                    <TouchableOpacity onPress={() => setActiveTab("cart")} style={{ alignItems: "center" }}>
+                    <TouchableOpacity onPress={() => setActiveTab("Basket")} style={{ alignItems: "center" }}>
                         <Text style={{ fontSize: 17 }}>🛒</Text>
-                        <Text style={{ marginTop: 3, fontWeight: activeTab === "cart" ? "700" : "400", textDecorationLine: activeTab === "cart" ? "underline" : "none" }}>Cart</Text>
+                        <Text style={{ marginTop: 3, fontWeight: activeTab === "cart" ? "700" : "400", textDecorationLine: activeTab === "Basket" ? "underline" : "none" }}>Basket</Text>
                     </TouchableOpacity>
                 </View>
 

@@ -1,13 +1,24 @@
-import { SafeAreaView, ScrollView, TouchableOpacity, View, Text, Image } from "react-native";
+import {SafeAreaView, ScrollView, TouchableOpacity, View, Text, Image, Alert} from "react-native";
 import { Feather, Ionicons } from "@expo/vector-icons";
 import {useEffect, useState} from "react";
 import {useNavigation, useRoute} from "@react-navigation/native";
 import {ImageBackground} from "expo-image";
+import api from "../api";
 
 function FoodDetailsScreen({ route }) {
     const [spice, setSpice] = useState("Mild");
     const [qty, setQty] = useState(1);
      // Missing states & sample data (added)
+
+    const [liked, setLiked] = useState(false);
+    const [saving, setSaving] = useState(false);  // success flash
+    const [iconColor, setIconColor] = useState("grey");
+
+
+    const getIconColor = () => {
+        return liked ? "red" : "black";
+    };
+
     const [selectedSize, setSelectedSize] = useState("Small");
     const navigation=useNavigation();
     const [toppings, setToppings] = useState([]);
@@ -33,6 +44,28 @@ function FoodDetailsScreen({ route }) {
         );
     };
 
+   async  function Liked(x) {
+        try {
+            console.log("the id for Liked button ",x)
+            setSaving(true);
+
+            // Your backend expects raw string body
+            const response = await api.post("/Product/Like", `${meal.id}`, {
+                headers: { "Content-Type": "application/json" }
+            });
+            console.log("liked button pressedqqrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqq",response.data);
+            setLiked(response.data.liked);
+
+            // Flash success green for 600ms
+            setTimeout(() => setSaving(false), 600);
+        } catch (error) {
+            console.log("Error liking product:", error);
+            setSaving(false);
+        }
+    }
+     const updateIconColor = () => {
+            setIconColor(Liked ? "green" : "red");
+        };
     return (
         <View style={{ flex: 1, backgroundColor: "#fff" }}>
             <ScrollView contentContainerStyle={{ paddingTop: 50, paddingBottom: 140 }}>
@@ -43,8 +76,11 @@ function FoodDetailsScreen({ route }) {
                         <Ionicons onPress={navigation.goBack} name="arrow-back" size={24} color="black" />
                     </TouchableOpacity>
                     <Text style={{ fontSize: 16, fontWeight: "600", color: "red" }}>Menu Item</Text>
-                    <TouchableOpacity >
-                        <Feather name="heart" size={24} color="black" />
+                    <TouchableOpacity onPress={()=>
+                        Liked().then(() => {
+                            updateIconColor();  // <-- triggers re-render
+                        })   }>
+                         <Ionicons name="heart" size={24} color={iconColor} />
                     </TouchableOpacity>
                 </View>
 
@@ -287,7 +323,7 @@ function FoodDetailsScreen({ route }) {
                     }}
                 >
                     <Text style={{ color: "#fff", fontWeight: "bold", fontSize: 16 }}>
-                        Add to Order - $11.00
+                        Add to Order - ${meal.cost}.00
                     </Text>
                     {/*<TouchableOpacity*/}
                     {/*    onPress={navigation.navigate('Checkout', { meals} )}*/}

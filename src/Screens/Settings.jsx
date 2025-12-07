@@ -2,12 +2,13 @@
 import React from "react";
 import { View, Text, TouchableOpacity, Image, ScrollView } from "react-native";
 import {useNavigation} from "@react-navigation/native";
+import {Button} from "react-native-paper";
 
 
 
 export default function SettingsScreen() {
     const navigation = useNavigation();
-    function senttopage() {
+    function AddProduct() {
         navigation.navigate("AddProduct")
     }
     return (
@@ -15,17 +16,22 @@ export default function SettingsScreen() {
 
         }}>
 
-            <Text
-                style={{
-                    fontSize: 22,
-                    fontWeight: "700",
-                    paddingTop: 0,
-                    paddingHorizontal: 20,
-                    marginBottom: 20
-                }}
-            >
-                Settings
-            </Text>
+            <TouchableOpacity style={{ flexDirection:"column",marginLeft:20,justifyContent:"flex-start" }}
+                              onPress={()=>navigation.goBack()}>
+                <Text style={{ color: "#492700", fontSize: 22 }}>⇦</Text>
+                <Text
+                    style={{
+                        fontSize: 22,
+                        fontWeight: "700",
+                        paddingHorizontal: 10,
+                        marginVertical: 20,
+                        padding: 15
+                    }}
+                >
+                    Settings
+                </Text>
+            </TouchableOpacity>
+
 
             {/* Settings block */}
             <View
@@ -37,28 +43,40 @@ export default function SettingsScreen() {
                     overflow: "hidden"
                 }}
             >
-                {["Email", "Username", "Step data source", "Language", "Privacy"].map(
-                    (label, idx) => (
-                        <TouchableOpacity
-                            key={idx}
-                            onPress={senttopage}
-                            style={{
-                                paddingVertical: 18,
-                                paddingHorizontal: 15,
-                                borderBottomWidth: idx === 4 ? 0 : 1,
-                                borderColor: "#ae1414",
-                                flexDirection: "row",
-                                borderWidth:0.01,
-                                justifyContent: "space-between",
-                                alignItems: "center"
-                            }}
-                        >
-                            <Text style={{ fontSize: 16 }}>{label}</Text>
-                            <Text style={{ fontSize: 18 }}>›</Text>
-                        </TouchableOpacity>
-                    )
-                )}
-            </View>
+                         <View>
+                             <TouchableOpacity
+                                 onPress={AddProduct}
+                                 style={{
+                                 paddingVertical: 18,
+                                 paddingHorizontal: 15,
+                                 borderBottomWidth: 0.2,
+                                 flexDirection: "row",
+                                 justifyContent: "space-between",
+                                 alignItems: "center",
+                                 // backgroundColor: "#9c9191",
+                             }}>
+                                 <Text style={{ fontSize: 16 }}>Add Product</Text>
+                                 <Text style={{ fontSize: 18 }}>›</Text>
+                             </TouchableOpacity>
+
+                        </View>
+                <View
+                    style={{
+                        paddingVertical: 18,
+                        paddingHorizontal: 15,
+                        borderBottomWidth: 0.2,
+                        flexDirection: "row",
+                        justifyContent: "space-between",
+                        alignItems: "center"
+                    }}
+                >
+                    <Text onPress={AddProduct} style={{ fontSize: 16 }}>View Inventory</Text>
+                    <Text style={{ fontSize: 18 }}>›</Text>
+                </View>
+
+
+
+             </View>
 
             {/* Premium Status */}
             <View
@@ -75,7 +93,7 @@ export default function SettingsScreen() {
             >
                 <Text style={{ fontSize: 16, color: "#444" }}>Premium Status</Text>
                 <Text style={{ fontSize: 16, color: "#ff8c42" }}>Inactive</Text>
-            </View>
+             </View>
 
             {/* Refer a friend */}
             <View

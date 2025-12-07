@@ -91,6 +91,8 @@ const AuthScreen = () => {
             const result = response.data;
 
             if (response.status === 200 && typeof result === 'string') {
+                setIsSignIn(true)
+
                 await AsyncStorage.setItem('auth_token', result);
                 setToken(result);
 
@@ -122,6 +124,8 @@ const AuthScreen = () => {
                 setVisible(true);
                 console.error('Request:', error.request);
             } else {
+
+                setIsSignIn(true)
                 // Something happened in setting up the request that triggered an Error
                 setMessage('Login failed. (Something happened in setting up the request)');
                 setVisible(true);

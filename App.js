@@ -53,6 +53,7 @@ function ProfileStack() {
             <Stack.Screen name="ProfileScreen" component={ProfileScreen} />
             <Stack.Screen name="AddProduct" component={AddProductScreen} />
             <Stack.Screen name="Settings" component={SettingsScreen} />
+            <Stack.Screen name="FoodDetail" component={FoodDetailsScreen} />
 
             <Stack.Screen name="ExerciseDetails" component={ExerciseDetails} />
             {/*<Stack.Screen name="TimerScreen" component={TimerScreen} />*/}
