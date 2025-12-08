@@ -4,6 +4,7 @@ import {useEffect, useState} from "react";
 import {useNavigation, useRoute} from "@react-navigation/native";
 import {ImageBackground} from "expo-image";
 import api from "../api";
+import * as Haptics from "expo-haptics";
 
 function FoodDetailsScreen({ route }) {
     const [spice, setSpice] = useState("Mild");
@@ -11,20 +12,13 @@ function FoodDetailsScreen({ route }) {
      // Missing states & sample data (added)
 
     const [liked, setLiked] = useState(false);
-    const [saving, setSaving] = useState(false);  // success flash
-    const [iconColor, setIconColor] = useState("grey");
+     const [iconColor, setIconColor] = useState("orange");
 
-
-    const getIconColor = () => {
-        return liked ? "red" : "black";
-    };
 
     const [selectedSize, setSelectedSize] = useState("Small");
     const navigation=useNavigation();
     const [toppings, setToppings] = useState([]);
      const {meal}=  route.params
-
-    console.log("food details page",meal)
 
     const sizeOptions = [
         { label: "Small", price: "$5" },
@@ -44,28 +38,26 @@ function FoodDetailsScreen({ route }) {
         );
     };
 
-   async  function Liked(x) {
+   async  function Liked() {
         try {
-            console.log("the id for Liked button ",x)
-            setSaving(true);
+            console.log("the id for Liked button  function")
+            console.log("page object for meal object",meal)
 
-            // Your backend expects raw string body
-            const response = await api.post("/Product/Like", `${meal.id}`, {
+             const response = await api.post("/Product/Like", `${meal.id}`, {
                 headers: { "Content-Type": "application/json" }
             });
-            console.log("liked button pressedqqrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqq",response.data);
+            console.log("liked button ",response.data);
             setLiked(response.data.liked);
+            await Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Heavy);
 
-            // Flash success green for 600ms
-            setTimeout(() => setSaving(false), 600);
+
         } catch (error) {
             console.log("Error liking product:", error);
-            setSaving(false);
-        }
+         }
     }
-     const updateIconColor = () => {
-            setIconColor(Liked ? "green" : "red");
-        };
+    useEffect(() => {
+        setIconColor(liked ? "red" : "orange");
+    }, [liked]);
     return (
         <View style={{ flex: 1, backgroundColor: "#fff" }}>
             <ScrollView contentContainerStyle={{ paddingTop: 50, paddingBottom: 140 }}>
@@ -75,11 +67,8 @@ function FoodDetailsScreen({ route }) {
                     <TouchableOpacity onPress={() => navigation.goBack()}>
                         <Ionicons onPress={navigation.goBack} name="arrow-back" size={24} color="black" />
                     </TouchableOpacity>
-                    <Text style={{ fontSize: 16, fontWeight: "600", color: "red" }}>Menu Item</Text>
-                    <TouchableOpacity onPress={()=>
-                        Liked().then(() => {
-                            updateIconColor();  // <-- triggers re-render
-                        })   }>
+                    <Text style={{ fontSize: 16, fontWeight: "600", color: "red" }}>Menu Items</Text>
+                    <TouchableOpacity onPress={Liked}>
                          <Ionicons name="heart" size={24} color={iconColor} />
                     </TouchableOpacity>
                 </View>

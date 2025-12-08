@@ -347,7 +347,7 @@ const navigation=useNavigation();
                     {/* CART TAB */}
                     <TouchableOpacity onPress={() => setActiveTab("Basket")} style={{ alignItems: "center" }}>
                         <Text style={{ fontSize: 17 }}>🛒</Text>
-                        <Text style={{ marginTop: 3, fontWeight: activeTab === "cart" ? "700" : "400", textDecorationLine: activeTab === "Basket" ? "underline" : "none" }}>Basket</Text>
+                        <Text style={{ marginTop: 3, fontWeight: activeTab === "Basket" ? "700" : "400", textDecorationLine: activeTab === "Basket" ? "underline" : "none" }}>Basket</Text>
                     </TouchableOpacity>
                 </View>
 
