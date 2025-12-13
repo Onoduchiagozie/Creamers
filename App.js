@@ -19,6 +19,8 @@ import HomeScreenTwo from "./src/Screens/HomeScreenTwo";
 import MenuScreen from "./src/Screens/MealCategory";
 import AddProductScreen from "./src/Screens/AddProduct";
 import SettingsScreen from "./src/Screens/Settings";
+import CartScreen from "./src/Screens/CartScreen";
+import {GestureHandlerRootView} from "react-native-gesture-handler";
 
 
 const Stack = createNativeStackNavigator();
@@ -36,6 +38,7 @@ const RootStack = createNativeStackNavigator();
 
             <Stack.Screen name="HomePage" component={HomeScreen} />
             <Stack.Screen name="FoodDetail" component={FoodDetailsScreen} />
+            <Stack.Screen name="Cart" component={CartScreen} />
             <Stack.Screen name="Checkout" component={CheckoutPage} />
             <Stack.Screen name="HomeTwo" component={HomeScreenTwo} />
             <Stack.Screen name="Menu" component={MenuScreen} />
@@ -97,10 +100,12 @@ function MainTabs() {
 /* ✅ Root stack – tabs + ExerciseDetails accessible from ANYWHERE */
 export default function App() {
     return (
+        <GestureHandlerRootView style={{ flex: 1 }}>
+
         <UserProvider>
         <PaperProvider>
             <NavigationContainer>
-                <Stack.Navigator
+                <RootStack.Navigator
                     initialRouteName="Auth"
                     screenOptions={{headerShown: false}}
                  >
@@ -116,11 +121,12 @@ export default function App() {
                     {/* ✅ GLOBAL ROUTES accessible from all tabs */}
                     <RootStack.Screen name="ExerciseDetails" component={ExerciseDetails} />
                     <RootStack.Screen name="TimerScreen" component={TimerScreen} />
-                </Stack.Navigator>
+                </RootStack.Navigator>
 
         </NavigationContainer>
         </PaperProvider>
         </UserProvider>
+            </GestureHandlerRootView>
     );
 }
 

@@ -1,25 +1,3 @@
-// (NOBRIDGE) LOG  theeeeeeeeeeeese [{"bodyPart": "upper arms", "equipment": "band", "gifUrl": "https://v2.exercisedb.io/image/UbptMUyu4L0yeC", "id": "0968",
-// "instructions": ["Stand with your feet shoulder-width apart and hold the band with an underhand
-//   grip, palms facing up.", "Keep your elbows close to your sides and slowly curl one arm up towards your shoulder, squeezing your biceps at the top.", "Lower the arm back down to the starting position and repeat with the other arm.", "Continue alternating arms for the desired number of repetitions."],
-// "name": "band alternating biceps curl",
-// "secondaryMuscles": ["forearms"], "target": "biceps"},
-//
-// {"bodyPart": "waist", "equipment": "band", "gifUrl": "https://v2.exercisedb.io/image/jlPlRwQBuVepRU", "id":
-//   "0969", "instructions": ["Lie flat on your back with your legs straight and your arms extended overhead, holding the band.", "Engage your abs and lift your legs and upper body off the ground simultaneously, reaching your hands towards your toes.", "As
-//   you lower your legs and upper body back down, switch the position of your legs, crossing one over the other.", "Repeat the movement, alternating the position of your legs with each repetition.", "Continue for the desired number of repetitions."], "name": "band alternating v-up", "secondaryMuscles": ["hip flexors"], "target": "abs"}, {"bodyPart": "back", "equipment": "band", "gifUrl": "https://v2.exercisedb.io/image/LzmAkJvn6HZIaX", "id": "0970", "instructions": ["Attach the band to a pull-up bar or
-//   sturdy anchor point.", "Step onto the band and grip the bar with your palms facing away from you, hands slightly wider than shoulder-width apart.", "Hang with your arms fully extended, keeping your core engaged and your shoulders down and back.", "Pull your body up towards the bar by squeezing your shoulder blades together and driving your elbows down towards your hips.", "Continue pulling until your chin is above the bar, then slowly lower yourself back down to the starting position.", "Repeat for
-//   the desired number of repetitions."],
-//  "name": "band assisted pull-up",
-// "secondaryMuscles": ["biceps", "forearms"], "target": "lats"},
-//
-// {"bodyPart": "waist", "equipment": "band", "gifUrl": "https://v2.exercisedb.io/image/jOYq7L9rTIJ-lm", "id": "0971", "instructions": ["Kneel on the floor and hold the handles of the band with both hands, palms facing down.", "Place the band on the ground in front of you and position your hands shoulder-width apart.", "Engage your core and slowly roll the wheel forward, extending your body as far as you can while maintaining control.", "Pause for a moment at the furthest point, then slowly roll the wheel back towards your knees to return to the starting position.", "Repeat for the desired number of repetitions."], "name": "band assisted wheel rollerout", "secondaryMuscles": ["lower back"], "target": "abs"}, {"bodyPart": "waist", "equipment": "band", "gifUrl": "https://v2.exercisedb.io/image/SnZJIwax4ybGgv", "id": "0972", "instructions": ["Lie flat on your back with your hands behind your head and your knees bent.", "Lift your feet off the ground and bring your right knee towards your chest while simultaneously twisting your torso to bring your left elbow towards your right knee.", "Straighten your right leg while bringing your left knee towards your chest and twisting your torso to bring your right elbow towards your left knee.", "Continue alternating the twisting motion, as if you are pedaling a bicycle, while keeping your core engaged throughout the movement.", "Repeat for the desired number of repetitions."], "name": "band bicycle crunch", "secondaryMuscles": ["hip flexors", "obliques"], "target": "abs"}, {"bodyPart": "back", "equipment": "band", "gifUrl": "https://v2.exercisedb.io/image/kUuDu0aww7QsNS", "id": "0974", "instructions": ["Attach the band to a high anchor point, such as a pull-up bar or sturdy beam.", "Stand facing the anchor point and grab the band with an underhand grip, hands shoulder-width apart.", "Step back to create tension in the band, keeping your feet hip-width apart.", "Engage your core and keep your back straight as you pull the band down towards your chest, squeezing your shoulder blades together.", "Pause for a moment at the bottom of the movement, then slowly release the band back to the starting position.", "Repeat for the desired number of repetitions."], "name": "band close-grip pulldown", "secondaryMuscles": ["biceps", "forearms"], "target": "lats"}, {"bodyPart": "upper arms", "equipment": "band", "gifUrl": "https://v2.exercisedb.io/image/uEwOQ5wLphQtVS", "id": "0975", "instructions": ["Place a band around your upper arms, just above the elbows.", "Assume a push-up position with your hands directly under your shoulders and your body in a straight line from head to heels.", "Bend your elbows and lower your chest towards the ground, keeping your elbows close to your sides.", "Push through your palms to extend your arms and return to the starting position.", "Repeat for the desired number of repetitions."], "name": "band close-grip push-up", "secondaryMuscles": ["chest", "shoulders"], "target": "triceps"}, {"bodyPart": "upper arms", "equipment": "band", "gifUrl": "https://v2.exercisedb.io/image/KIS5E8TKk5pmUp", "id": "0976", "instructions": ["Sit on a bench or chair with your legs spread apart and your feet flat on the ground.", "Hold one end of the band in your hand and step on
-//   the other end with your foot on the same side.", "Lean forward slightly and rest your elbow on the inside of your thigh, just
-//   above the knee.", "With your palm facing up, slowly curl your hand towards your shoulder, keeping your upper arm stationary.", "Pause for a moment at the top, then slowly lower your hand back down to the starting position.", "Repeat for the desired number of repetitions, then switch sides."], "name": "band concentration curl", "secondaryMuscles": ["forearms"], "target": "biceps"}, {"bodyPart": "shoulders", "equipment": "band", "gifUrl": "https://v2.exercisedb.io/image/1bU3v9FgZ2HLsv", "id": "0977",
-//   "instructions": ["Stand with your feet shoulder-width apart and hold the band in front of your thighs with your palms facing down.", "Keep your arms straight and lift the band up in front of you until your arms are parallel to the ground.", "Pause for
-//   a moment at the top, then slowly lower the band back down to the starting position.", "Repeat for the desired number of repetitions."], "name": "band front lateral raise", "secondaryMuscles": ["traps", "upper back"], "target": "delts"}, {"bodyPart": "shoulders", "equipment": "band", "gifUrl": "https://v2.exercisedb.io/image/0Pm5QB3aKBVDLg", "id": "0978", "instructions": ["Stand with your feet shoulder-width apart and hold the band in front of your thighs with your palms facing down.", "Keep your arms straight and slowly raise them forward until they are parallel to the ground.", "Pause for a moment at the top, then slowly
-//   lower your arms back down to the starting position.", "Repeat for the desired number of repetitions."], "name": "band front raise", "secondaryMuscles": ["triceps", "upper back"], "target": "delts"}]
-
-import {Dimensions} from "react-native";
 
 export const BodyParts = [
   {
@@ -946,8 +924,7 @@ export const eateries = [
         specialty: 'Steaks & Ribs',
     },
 ];
-export const ExcerciseDB_API_KEY =
-  'efbbf9641cmsh31c8cee6dcedda0p1ff29fjsn1e1c07bad08d';
+
 
 export const AI_Image_API_Key = '';
 
@@ -956,6 +933,5 @@ export const secretKey = 'my_Super_Secret_Key_Here_Must_Not_Be_123, Or, Else';
  export const tokenGlobal ="";
 
 //export const BaseURL = 'http://192.168.161.15:5151/Api';
-const localurl="127.0.0.1";
-const url ="192.168.100.36";
+ const url ="192.168.100.36";
 export const BaseURL = `http://${url}:5151/Api`;

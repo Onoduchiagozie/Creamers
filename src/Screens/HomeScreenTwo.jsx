@@ -1,5 +1,5 @@
 
-import {SafeAreaView, StatusBar, View, TextInput, Text, TouchableOpacity, Image, Dimensions} from "react-native";
+import {SafeAreaView, StatusBar, View, Text, TouchableOpacity,TextInput ,Image, Dimensions} from "react-native";
 import {ScrollView} from "react-native-virtualized-view";
 import {Feather, Ionicons} from "@expo/vector-icons";
 import EateryScroller from "../Components/EateryScroller";
@@ -7,23 +7,28 @@ import Carousel from "react-native-reanimated-carousel/src/components/Carousel";
 import {BaseURL, eateries} from "../Constants";
 import * as Haptics from "expo-haptics";
 import {ImageBackground} from "expo-image";
-import React, {useEffect, useState} from "react";
+ import React, {useContext, useEffect, useState} from "react";
 import axios from "axios";
 import {useNavigation} from "@react-navigation/native";
+import {UserContext} from "../UserContext";
 
 const HomeScreenTwo = () =>  {
     const { width } = Dimensions.get('window');
     const [meals, setMeals] = useState([]);
     const navigation=useNavigation();
+
+
+    const { myCurrentUserObject } = useContext(UserContext);
+
     const fetchMeals = async () => {
         try {
             const res = await axios.get(`${BaseURL}/Product/GetAllProducts`);
-            console.log("all product",res.data);
-            setMeals(res.data); // assuming API returns array of meals
+             setMeals(res.data); // assuming API returns array of meals
         } catch (error) {
             console.log('Error fetching meals:', error.response?.data || error.message);
         }
     };
+    console.log("here is the food ",meals)
 
     useEffect(() => {
         fetchMeals();
@@ -36,19 +41,32 @@ const HomeScreenTwo = () =>  {
 
                 {/* Header */}
                 <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginBottom: 20 }}>
-                     <Text style={{ fontSize: 18, fontWeight: 'bold' }}>Creamers</Text>
-                    <Feather name="bell" size={24} color="black" />
+                     <Text style={{ fontSize: 18, fontWeight: 'bold' }}> Hi {myCurrentUserObject.username}</Text>
+                    <Feather name="bell" size={24} color="red" />
                 </View>
 
                 {/* Search */}
                 <View style={{ flexDirection: 'row', alignItems: 'center', marginBottom: 25 }}>
-                    <View style={{ flex: 1, flexDirection: 'row', backgroundColor: '#fff', borderRadius: 15, padding: 12, alignItems: 'center', marginRight: 10, shadowColor: '#000', shadowOpacity: 0.05, shadowRadius: 5 }}>
-                        <Feather name="search" size={20} color="#FF914D" style={{ marginRight: 10 }} />
-                        <TextInput placeholder="Search Something" style={{ flex: 1 }} />
+                    <View style={{ flex: 1, flexDirection: 'row', backgroundColor: '#fff', borderRadius: 5, padding: 12, alignItems: 'center', marginRight: 10, shadowColor: '#000', shadowOpacity: 0.05, shadowRadius: 5 }}>
+                         <TextInput
+
+                             placeholder="Search Something"
+                             style={{ flex: 1,borderRadius:15 }} />
                     </View>
-                    <View style={{ backgroundColor: '#fff', padding: 12, borderRadius: 15 }}>
-                        <Ionicons name="person-circle" size={20} color="#FF914D" />
-                    </View>
+                    <TouchableOpacity
+                        onPress={
+                        ()=>navigation.navigate("cart")}
+                        style={{
+                            backgroundColor: '#fff',
+                            padding: 12,
+                            borderRadius: 15
+                            }}>
+                        <Ionicons
+                            name="cart"
+                                  size={20}
+                                  color="red"
+                        />
+                    </TouchableOpacity>
                 </View>
 
                 {/* Order Status Cards */}
@@ -68,12 +86,13 @@ const HomeScreenTwo = () =>  {
 
                 {/* Categories */}
                 <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginVertical: 20  }}>
+                    <Text style={{ fontSize: 16, fontWeight: 'bold' }}>Category</Text>
                     <Text style={{ fontSize: 16, fontWeight: 'bold' }}>Search By Category</Text>
                  </View>
-                <View style={{ flexDirection: 'row', justifyContent: 'space-between', marginBottom: 25 }}>
+                <View style={{ flexDirection: 'row', justifyContent: 'space-between', marginBottom: 25,  borderRadius:10}}>
                     {['Pizza', 'Burger', 'Chicken', 'Drink'].map((item, index) => (
                         <View key={index} style={{ alignItems: 'center' }}>
-                            <View style={{ width: 60, height: 60, backgroundColor: '#fff', borderRadius: 15, justifyContent: 'center', alignItems: 'center', marginBottom: 5, shadowColor: '#000', shadowOpacity: 0.05 }}>
+                            <View style={{ width: 60, borderWidth:2,borderColor:'red',height: 60, backgroundColor: '#fff', borderRadius: 15, justifyContent: 'center', alignItems: 'center', marginBottom: 5, shadowColor: '#000', shadowOpacity: 0.5 }}>
                                 <Text style={{ fontSize: 25 }}>{item === 'Pizza' ? '🍕' : item === 'Burger' ? '🍔' : item === 'Chicken' ? '🍗' : '🥤'}</Text>
                             </View>
                             <Text style={{ fontSize: 12, fontWeight: '500' }}>{item}</Text>

@@ -1,12 +1,13 @@
-import React, {useState, useRef, useEffect} from "react";
+import React, {useState, useRef, useEffect, useContext} from "react";
 import Modal from 'react-native-modal'
-import {View, Text, TouchableOpacity, ScrollView, Animated, Dimensions, Alert} from "react-native";
+import {View, Text, TouchableOpacity, ScrollView, Animated, Dimensions, Alert, FlatList} from "react-native";
 import SettingsScreen from "./Settings";
 import {useNavigation} from "@react-navigation/native";
 import {Ionicons} from "@expo/vector-icons";
 import api from "../api";
 import {Image, ImageBackground} from 'expo-image';
 import {BaseURL} from "../Constants";
+import {UserContext} from "../UserContext";
 
 const { height } = Dimensions.get('window');
 // Configuration for the animation
@@ -16,6 +17,7 @@ const PROFILE_IMAGE_MAX_HEIGHT = 95;
 const PROFILE_IMAGE_MIN_HEIGHT = 50;
 
 export default function ProfileScreen() {
+    const { myCurrentUserObject } = useContext(UserContext);
 
 
     const [activeTab, setActiveTab] = useState("home");
@@ -146,12 +148,35 @@ const gotodetail = (item) => {
                     <Text style={{ fontSize: 20, fontWeight: "700", marginBottom: 20 }}>
                         New
                     </Text>
-                    <View style={{ flexDirection: "row", justifyContent: "space-between", alignItems: "center", marginBottom: 30 }}>
+                    <View
+                        style={{
+                            flexDirection: "row", justifyContent: "space-between",
+                            alignItems: "center", marginBottom: 30 }}>
                         <Text style={{ fontSize: 28 }}>⬅</Text>
-                        <Image source={{ uri: "https://i.ibb.co/T0pZqZp/chicken.png" }} style={{ width: 70, height: 70, borderRadius: 50, backgroundColor: "#fff" }} />
-                        <Image source={{ uri: "https://i.ibb.co/CvQjV9K/salad.png" }} style={{ width: 70, height: 70, borderRadius: 50, backgroundColor: "#fff" }} />
-                        <Image source={{ uri: "https://i.ibb.co/T0pZqZp/chicken.png" }} style={{ width: 70, height: 70, borderRadius: 50, backgroundColor: "#fff" }} />
-                        <Text style={{ fontSize: 28 }}>➡</Text>
+                        <FlatList showsHorizontalScrollIndicator={false} pagingEnabled={true}
+                                  style={{
+                                      flexDirection:'row',
+                                       borderRadius: 30,
+                        }} contentContainerStyle={{
+                             justifyContent:'space-around',
+                            alignItems:'space-around',
+                            marginHorizontal: 20,
+                        }} horizontal={true} data={
+                            [
+                                "https://i.ibb.co/T0pZqZp/chicken.png",
+                                "https://i.ibb.co/T0pZqZp/chicken.png",
+                                "https://i.ibb.co/T0pZqZp/chicken.png",
+                                "https://i.ibb.co/T0pZqZp/chicken.png",
+                                "https://i.ibb.co/T0pZqZp/chicken.png",
+                                "https://i.ibb.co/T0pZqZp/chicken.png",
+                                "https://i.ibb.co/T0pZqZp/chicken.png",
+                                "https://i.ibb.co/T0pZqZp/chicken.png",
+                                "https://i.ibb.co/T0pZqZp/chicken.png"
+                            ]}
+                                  renderItem={(item)=>
+                                      <Image  source={{ uri:item }} style={{ width: 70, height: 70, borderRadius: 50, backgroundColor: "#fff",marginHorizontal:10 }} ></Image>
+                        }/>
+                   <Text style={{ fontSize: 28 }}>➡</Text>
                     </View>
                     <Text style={{ textAlign: "center", fontSize: 20, fontWeight: "700", marginBottom: 100 }}>
                         Top Sales
@@ -165,7 +190,7 @@ const gotodetail = (item) => {
             return (
                 <View style={{ padding: 20 }}>
                     <Text style={{ fontSize: 22, fontWeight: "700" }}>Comments</Text>
-                    {[1,2,3,4,5].map(i => (
+                    {[1,2].map(i => (
                         <View key={i} style={{marginBottom: 20}}>
                             <Text style={{ marginTop: 20 }}>• “Best food I ever tasted!”</Text>
                         </View>
@@ -270,7 +295,7 @@ const navigation=useNavigation();
                 />
 
                 <Text style={{ color: "rgba(5,0,0,0.91)", fontSize: 22, marginTop: 15, fontWeight: "700" }}>
-                    Dan DiFelice
+                    {myCurrentUserObject.username}
                 </Text>
 
                 {/* This text will fade out on scroll */}
@@ -316,7 +341,7 @@ const navigation=useNavigation();
             <ScrollView
                 style={{
                     flex: 1,
-                    backgroundColor: "rgba(60,30,30,0.96)",
+                    backgroundColor: "rgb(216,122,13)",
                      borderTopLeftRadius: 40,
                     borderTopRightRadius: 40
                  }}

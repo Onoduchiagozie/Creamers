@@ -28,7 +28,7 @@ const AuthScreen = () => {
 
     console.error = (e) => {
         if (e && e.message) console.log("Caught error: =>", e.message);
-        else console.log("🔍 Caught error =>:", e);
+        else console.error("🔍 Caught error =>:", e);
     };
 
     const userNameHasErrors = () => {
@@ -171,7 +171,7 @@ const AuthScreen = () => {
 
             <TextInput label="Username"
                        right={<TextInput.Icon icon="account" />}
-                       value={userName} onChangeText={setUserName}  style={{ marginBottom: 10 ,borderRadius:30}} />
+                       value={userName} onChangeText={setUserName}  style={{ marginBottom: 10 ,borderRadius:10}} />
             <HelperText theme={{ colors: { primary: 'green' } }}  type="error" visible={userNameHasErrors()}>
                 Username is invalid!
             </HelperText>
