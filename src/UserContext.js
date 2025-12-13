@@ -3,6 +3,8 @@ import React, { createContext, useState, useEffect } from 'react';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import JWT from 'expo-jwt';
 import { secretKey } from './Constants';
+import ExpoHaptics from "expo-haptics/src/ExpoHaptics";
+import * as Haptics from "expo-haptics";
 
 export const UserContext = createContext(
     {
@@ -10,8 +12,10 @@ export const UserContext = createContext(
     setUser: () => {},
     token: '',
     setToken: () => {},
+    setOrders: () => {},
     restoreUser: () => {},
         cartItems:[],
+        orders:[],
         addToCart:()=>{},
         updateQty:()=>{},
         deleteItem:()=>{}
@@ -22,24 +26,29 @@ export const UserProvider = ({ children }) => {
     const [myCurrentUserObject, setUser] = useState({});
     const [cartItems, setCartItems] = useState([]);
     const [token, setToken] = useState('');
+    const [orders, setOrders] = useState([]);
 
 
     const addToCart = (order) => {
         setCartItems((prev) => [...prev, { ...order,productId: Date.now() }]);
     };
 
-    const updateQty = (uid, delta) => {
+    const updateQty = (productId, delta) => {
         setCartItems((prev) =>
             prev.map(item =>
-                item.uid === uid
+                item.productId === productId
                     ? { ...item, qty: Math.max(1, item.qty + delta) }
                     : item
             )
         );
+        Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Soft);
+
     };
 
-    const deleteItem = (uid) => {
-        setCartItems((prev) => prev.filter((item) => item.uid !== uid));
+    const deleteItem = (productId) => {
+        setCartItems((prev) => prev.filter((item) => item.productId !== productId));
+        Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Heavy);
+
     };
 
 
@@ -102,7 +111,9 @@ export const UserProvider = ({ children }) => {
         addToCart,
         updateQty,
         deleteItem,
-        cartItems
+        cartItems,
+        orders,
+        setOrders
 
     };
 

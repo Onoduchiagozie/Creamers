@@ -9,12 +9,14 @@ import {
 import Swipeable from "react-native-gesture-handler/Swipeable";
 import { Ionicons } from "@expo/vector-icons";
 import {UserContext} from "../UserContext";
+import * as Haptics from "expo-haptics";
+import {useNavigation} from "@react-navigation/native";
 
 export default function CartScreen({}) {
   //  const {payload}=route.params;
     const { cartItems, updateQty, deleteItem } = useContext(UserContext);
 
-console.log("cart screen ", cartItems);
+console.log("cart screen  cartitem", cartItems);
     const renderDeleteAction = (item) => (
         <View
             style={{
@@ -30,14 +32,22 @@ console.log("cart screen ", cartItems);
         </View>
     );
 
+
     const subtotal = cartItems.reduce(
-        (sum, item) => sum + item.price * item.qty,
+        (sum, item) => sum + item.totalPrice * item.qty,
         0
     );
 
-    const discount = 25;
-    const total = subtotal - discount;
+    const totalItems = cartItems.reduce(
+        (sum, item) => sum + item.qty,
+        0
+    );
 
+    console.log("subtotoallllllllllllll",subtotal);
+
+    const discount =subtotal*0.001;
+    const total = subtotal - discount;
+    const navigation=useNavigation();
     return (
         <View style={{ flex: 1, backgroundColor: "#F9F9F9", padding: 16 }}>
             {/* Header */}
@@ -48,7 +58,7 @@ console.log("cart screen ", cartItems);
                     marginBottom: 20,
                 }}
             >
-                <TouchableOpacity>
+                <TouchableOpacity onPress={()=>navigation.goBack()}>
                     <Ionicons name="arrow-back" size={28} color="#000" />
                 </TouchableOpacity>
                 <Text
@@ -70,7 +80,10 @@ console.log("cart screen ", cartItems);
                         key={item.productId}
                         renderRightActions={() => (
                             <TouchableOpacity
-                                onPress={() => deleteItem(item.productId)}
+                                onPress={() =>{
+                                    deleteItem(item.productId)
+
+                                }}
                                 activeOpacity={0.9}
                             >
                                 {renderDeleteAction(item)}
@@ -101,7 +114,7 @@ console.log("cart screen ", cartItems);
                                 <Text style={{ fontWeight: "700", fontSize: 16 }}>
                                     {item.name}
                                 </Text>
-                                <Text style={{ color: "#666" }}>Size: {item.totalPrice}</Text>
+                                <Text style={{ color: "#666" }}>Size: {item.basePrice}</Text>
                                 <Text style={{ fontWeight: "600", marginTop: 4 }}>
                                     ${item.totalPrice}
                                 </Text>
@@ -118,7 +131,7 @@ console.log("cart screen ", cartItems);
                                     borderRadius: 50,
                                 }}
                             >
-                                <TouchableOpacity onPress={() => updateQty(item.uid, -1)}>
+                                <TouchableOpacity onPress={() => updateQty(item.productId, -1)}>
                                     <Ionicons name="remove-circle-outline" size={24} />
                                 </TouchableOpacity>
 
@@ -126,7 +139,7 @@ console.log("cart screen ", cartItems);
                                     {item.qty}
                                 </Text>
 
-                                <TouchableOpacity onPress={() => updateQty(item.uid, +1)}>
+                                <TouchableOpacity onPress={() => updateQty(item.productId, +1)}>
                                     <Ionicons name="add-circle-outline" size={24} />
                                 </TouchableOpacity>
                             </View>
@@ -208,15 +221,20 @@ console.log("cart screen ", cartItems);
                 </View>
 
                 <TouchableOpacity
+                    onPress={()=>navigation.navigate("Checkout",{cartItems: cartItems})}
                     style={{
                         backgroundColor: "#FF914D",
                         padding: 18,
                         borderRadius: 12,
                         marginTop: 20,
                         alignItems: "center",
+                        marginBottom:50
                     }}
                 >
-                    <Text style={{ color: "#fff", fontSize: 18, fontWeight: "700" }}>
+                    <Text
+
+
+                        style={{ color: "#fff", fontSize: 18, fontWeight: "700" }}>
                         Checkout
                     </Text>
                 </TouchableOpacity>

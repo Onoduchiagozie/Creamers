@@ -3,7 +3,7 @@ import {SafeAreaView, StatusBar, View, Text, TouchableOpacity,TextInput ,Image, 
 import {ScrollView} from "react-native-virtualized-view";
 import {Feather, Ionicons} from "@expo/vector-icons";
 import EateryScroller from "../Components/EateryScroller";
-import Carousel from "react-native-reanimated-carousel/src/components/Carousel";
+import Carousel from 'react-native-reanimated-carousel';
 import {BaseURL, eateries} from "../Constants";
 import * as Haptics from "expo-haptics";
 import {ImageBackground} from "expo-image";
@@ -11,6 +11,7 @@ import {ImageBackground} from "expo-image";
 import axios from "axios";
 import {useNavigation} from "@react-navigation/native";
 import {UserContext} from "../UserContext";
+import OrderHeadline from "../Components/ActiveOrders";
 
 const HomeScreenTwo = () =>  {
     const { width } = Dimensions.get('window');
@@ -18,7 +19,7 @@ const HomeScreenTwo = () =>  {
     const navigation=useNavigation();
 
 
-    const { myCurrentUserObject } = useContext(UserContext);
+    const { myCurrentUserObject ,orders} = useContext(UserContext);
 
     const fetchMeals = async () => {
         try {
@@ -49,19 +50,16 @@ const HomeScreenTwo = () =>  {
                 <View style={{ flexDirection: 'row', alignItems: 'center', marginBottom: 25 }}>
                     <View style={{ flex: 1, flexDirection: 'row', backgroundColor: '#fff', borderRadius: 5, padding: 12, alignItems: 'center', marginRight: 10, shadowColor: '#000', shadowOpacity: 0.05, shadowRadius: 5 }}>
                          <TextInput
-
                              placeholder="Search Something"
-                             style={{ flex: 1,borderRadius:15 }} />
+                             style={{ flex: 1,borderRadius:35 }} />
                     </View>
                     <TouchableOpacity
-                        onPress={
-                        ()=>navigation.navigate("cart")}
                         style={{
                             backgroundColor: '#fff',
                             padding: 12,
                             borderRadius: 15
                             }}>
-                        <Ionicons
+                        <Ionicons onPress={()=>navigation.navigate("Cart")}
                             name="cart"
                                   size={20}
                                   color="red"
@@ -70,24 +68,22 @@ const HomeScreenTwo = () =>  {
                 </View>
 
                 {/* Order Status Cards */}
-                <View style={{ flexDirection: 'row', justifyContent: 'space-between', marginBottom: 25 }}>
-                    <View style={{ width: '48%', backgroundColor: '#fff', padding: 15, borderRadius: 15, shadowColor: '#000', shadowOpacity: 0.05 }}>
-                        <Text style={{ fontSize: 12, color: '#888' }}>Order #2140</Text>
-                        <View style={{ backgroundColor: '#FFEADD', alignSelf: 'flex-start', paddingHorizontal: 8, paddingVertical: 2, borderRadius: 5, marginTop: 5 }}>
-                            <Text style={{ color: '#FF914D', fontSize: 10, fontWeight: 'bold' }}>Delivered</Text>
-                        </View>
-                        <View style={{ flexDirection: 'row', justifyContent: 'space-between', marginTop: 15, alignItems: 'center' }}>
-                            <Text style={{ fontSize: 12, fontWeight: '600' }}>2 Items</Text>
-                            <Text style={{ fontSize: 14, fontWeight: 'bold' }}>$9.87</Text>
-                        </View>
-                    </View>
+                {orders.length > 0 && (
+                    <OrderHeadline
 
-                </View>
+                        orders={
+                        orders.map(order => ({
+                            id: order.id,
+                            status: order.status,
+                            items: order.items,
+                            total: order.subtotal,
+                        }))}
+                    />
+                )}
 
                 {/* Categories */}
                 <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginVertical: 20  }}>
-                    <Text style={{ fontSize: 16, fontWeight: 'bold' }}>Category</Text>
-                    <Text style={{ fontSize: 16, fontWeight: 'bold' }}>Search By Category</Text>
+                     <Text style={{ fontSize: 16, fontWeight: 'bold' }}>Search By Category</Text>
                  </View>
                 <View style={{ flexDirection: 'row', justifyContent: 'space-between', marginBottom: 25,  borderRadius:10}}>
                     {['Pizza', 'Burger', 'Chicken', 'Drink'].map((item, index) => (
@@ -106,41 +102,35 @@ const HomeScreenTwo = () =>  {
 
                     <Carousel
                         loop
-                        width={width*0.99}
+                        width={width}
                         height={width / 2}
                         autoPlay={true}
                         data={eateries}
                         scrollAnimationDuration={3000} // Speed of the scroll
                         onSnapToItem={(index) => console.log('current index:', index)}
-                        renderItem={({ item, index }) => (
-                            <View
-                                style={{
-                                    flex: 2,
-                                    // justifyContent: 'center',
-                                    // alignItems: 'center',
-                                }}
-                            ><TouchableOpacity
+                        renderItem={({ item }) => (
+                         <TouchableOpacity
                                 onPress={() => {
                                     Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
                                     navigation.navigate('BodyPartExerciseList', { workout: item });
                                 }}>
-                                <ImageBackground
-                                    source={{uri:item.logo_url}}
+                                <Image
+                                    source={{uri:'https://1000logos.net/wp-content/uploads/2017/03/Kfc_logo.png'}}
                                     style={{
-                                        borderRadius:15,
+                                        borderRadius:20,
                                         overflow: 'hidden',
                                         resizeMode: "contain",
                                         height: width/2,
-                                        elevation:1,
+                                        elevation:10,
                                         marginRight:20,
-                                        borderWidth:4,
+                                        borderWidth:1,
                                         borderColor:"#ff6f61"
 
                                     }}
                                 />
                             </TouchableOpacity>
 
-                            </View>
+
                         )}
                     />
                 </View>
