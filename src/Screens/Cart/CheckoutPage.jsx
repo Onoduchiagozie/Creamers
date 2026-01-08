@@ -1,10 +1,10 @@
 import {SafeAreaView, TouchableOpacity, View, Text, Image, FlatList} from "react-native";
 import {Feather, Ionicons} from "@expo/vector-icons";
-import FoodDetailsScreen from "./FoodDetailsOne";
+import FoodDetailsScreen from "../Home/FoodDetailsOne";
 import {useContext, useState} from "react";
 import {useNavigation} from "@react-navigation/native";
-import {UserContext} from "../UserContext";
-import CartItemRow from "../Components/CartItem";
+import {UserContext} from "../../Services/Context/UserContext";
+import CartItemRow from "../../Components/CartItem";
 import {ScrollView} from "react-native-virtualized-view";
 
 function CheckoutPage({ route }) {
@@ -39,8 +39,7 @@ debugger
             subtotal,
             createdAt: new Date().toISOString(),
         };
-console.log("new order BUT TO BE ,ADE ",newOrder);
-        setOrders(prev => [newOrder, ...prev]);
+         setOrders(prev => [newOrder, ...prev]);
 
         // OPTIONAL: clear cart after checkout
      //   setCartItems([]);

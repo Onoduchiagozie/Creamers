@@ -4,8 +4,8 @@ import { ImageBackground } from 'expo-image';
 import { LinearGradient } from 'expo-linear-gradient';
 import { ScrollView } from 'react-native-virtualized-view';
 
-import { addExercise } from '../ApiServices';
-import { UserContext } from "../UserContext";
+import { addExercise } from '../Services/ApiServices';
+import { UserContext } from "../Services/Context/UserContext";
 import * as Haptics from "expo-haptics";
 
 const ExerciseDetails = ({ route, navigation }) => {

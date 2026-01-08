@@ -5,7 +5,7 @@ import Meal from './Components/Meal';
 import ChooseDinner from './Components/ChooseDinner';
 import { ScrollView } from 'react-native-virtualized-view';
 import { LinearGradient } from 'expo-linear-gradient';
-import {UserContext} from "./UserContext";
+import {UserContext} from "./Services/Context/UserContext";
 import ChooseSeller from "./Components/Seller";
 import Eatery from "./Components/EateryScroller";
 

@@ -5,7 +5,7 @@ import axios from 'axios';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import JWT from 'expo-jwt';
 import { useNavigation, useRoute } from '@react-navigation/native';
-import { UserContext } from '../UserContext';
+import { UserContext } from '../Services/Context/UserContext';
 import { BaseURL, secretKey } from '../Constants';
 
 const AuthScreen = () => {

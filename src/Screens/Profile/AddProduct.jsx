@@ -13,9 +13,9 @@ import {
 } from "react-native";
 import * as ImagePicker from "expo-image-picker";
 import { useNavigation } from "@react-navigation/native";
-import {BaseURL} from "../Constants";
+import {BaseURL} from "../../Constants";
 
-import api from "../api";
+import api from "../../Services/api";
 
 export default function AddProductScreen() {
     const [name, setName] = useState("");
@@ -135,7 +135,7 @@ export default function AddProductScreen() {
 
 
         };
-console.log("Here is the payload oooooo ooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooo",payload);
+console.log("Here is the payload o o o",payload);
         setLoading(true);
 
 
@@ -143,9 +143,7 @@ console.log("Here is the payload oooooo oooooooooooooooooooooooooooooooooooooooo
             const res = await api.post(`${BaseURL}/Product/AddProduct`, payload, {
                 headers: { "Content-Type": "application/json" },
             });
-
             Alert.alert("Success", res.data.message || "Product created");
-
             // Reset form
             setName("");
             setPrice("");

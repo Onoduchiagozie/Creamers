@@ -1,29 +1,27 @@
-import {StyleSheet, View,Text} from 'react-native';
-import {NavigationContainer} from '@react-navigation/native';
-import {createStackNavigator} from "@react-navigation/stack";
-import {createBottomTabNavigator} from '@react-navigation/bottom-tabs';
-import { Provider as PaperProvider } from 'react-native-paper'; //
-import './global.css';
+ import './global.css';
 import AuthScreen from './src/Screens/AuthScreen';
-import {UserProvider} from './src/UserContext';
+import {UserProvider} from './src/Services/Context/UserContext';
 import HomeScreen from "./src/HomeScreen";
-import {BodyPartExerciseList} from "./src/Screens/BodyPartExerciseList";
-import ExerciseDetails from "./src/Screens/ExerciseDetails";
-import {EvilIcons, Ionicons} from "@expo/vector-icons";
+ import {EvilIcons, Ionicons} from "@expo/vector-icons";
 import {createNativeStackNavigator} from "@react-navigation/native-stack";
-import ProfileScreen from "./src/Screens/ProfileScreen";
-import TimerScreen from "./src/Screens/TimerScreen";
-import FoodDetailsScreen from "./src/Screens/FoodDetailsOne";
-import CheckoutPage  from "./src/Screens/CheckoutPage";
-import HomeScreenTwo from "./src/Screens/HomeScreenTwo";
-import MenuScreen from "./src/Screens/MealCategory";
-import AddProductScreen from "./src/Screens/AddProduct";
-import SettingsScreen from "./src/Screens/Settings";
-import CartScreen from "./src/Screens/CartScreen";
+import ProfileScreen from "./src/Screens/Profile/ProfileScreen";
+ import FoodDetailsScreen from "./src/Screens/Home/FoodDetailsOne";
+import CheckoutPage  from "./src/Screens/Cart/CheckoutPage";
+import HomeScreenTwo from "./src/Screens/Home/HomeScreenTwo";
+import MenuScreen from "./src/Screens/Home/MenuScreen";
+import AddProductScreen from "./src/Screens/Profile/AddProduct";
+import SettingsScreen from "./src/Screens/Profile/Settings";
+import CartScreen from "./src/Screens/Cart/CartScreen";
 import {GestureHandlerRootView} from "react-native-gesture-handler";
+import {createBottomTabNavigator} from "@react-navigation/bottom-tabs";
+import {Provider, BottomNavigation, PaperProvider} from 'react-native-paper';
+ import MaterialCommunityIcons from '@expo/vector-icons/MaterialCommunityIcons';
+ import {CommonActions, NavigationContainer} from '@react-navigation/native';
+ import CheckoutScreen from "./src/Screens/Cart/CheckoutScreen";
 
 
-const Stack = createNativeStackNavigator();
+
+ const Stack = createNativeStackNavigator();
 const Tab = createBottomTabNavigator();
 const RootStack = createNativeStackNavigator();
  function HomeStack() {
@@ -32,19 +30,19 @@ const RootStack = createNativeStackNavigator();
             initialRouteName="HomeTwo"
             screenOptions={{
                 headerShown: false,
+                 animationDuration: 900,
             }}
 
         >
 
             <Stack.Screen name="HomePage" component={HomeScreen} />
-            <Stack.Screen name="FoodDetail" component={FoodDetailsScreen} />
-            <Stack.Screen name="Cart" component={CartScreen} />
-            <Stack.Screen name="Checkout" component={CheckoutPage} />
-            <Stack.Screen name="HomeTwo" component={HomeScreenTwo} />
             <Stack.Screen name="Menu" component={MenuScreen} />
-            {/*<Stack.Screen name="BodyPartExerciseList" component={BodyPartExerciseList}/>*/}
-            {/*<Stack.Screen name="ExerciseDetails" component={ExerciseDetails} />*/}
-            {/*<Stack.Screen name="TimerScreen" component={TimerScreen} />*/}
+            <Stack.Screen name="FoodDetail" component={FoodDetailsScreen} />
+            <Stack.Screen name="Cart" component={CartScreen}    options={{ title: 'Payment' }}
+            />
+            <Stack.Screen name="Checkout" component={CheckoutScreen} />
+            <Stack.Screen name="HomeTwo" component={HomeScreenTwo} />
+
          </Stack.Navigator>
     );
 }
@@ -58,8 +56,6 @@ function ProfileStack() {
             <Stack.Screen name="Settings" component={SettingsScreen} />
             <Stack.Screen name="FoodDetail" component={FoodDetailsScreen} />
 
-            <Stack.Screen name="ExerciseDetails" component={ExerciseDetails} />
-            {/*<Stack.Screen name="TimerScreen" component={TimerScreen} />*/}
 
         </Stack.Navigator>
 
@@ -67,37 +63,120 @@ function ProfileStack() {
 }
 
 /* ✅ Bottom tab navigator */
-function MainTabs() {
-    return (
-        <Tab.Navigator
-            screenOptions={({ route }) => ({
-                headerShown: false,
-                tabBarIcon: ({ color, size }) => {
-                    let iconName;
+ function MainTabs() {
+     return (
+         <PaperProvider>
+             {/* Provider wraps your app to give access to React Native Paper's theming system */}
 
-                    if (route.name === 'Home') iconName = 'home';
-                 //   else if (route.name === 'Favourites') iconName = 'heart';
-                    else if (route.name === 'Profile') iconName = 'person';
+             <Tab.Navigator
+                 screenOptions={{
+                     headerShown: false,
+                     // Hides the header at the top of each screen
+                 }}
 
-                    return <Ionicons name={iconName} size={size} color={color} />;
-                },
-                tabBarActiveTintColor: 'purple',
-                tabBarInactiveTintColor: 'white',
-                tabBarStyle: {
-                    backgroundColor: '#050112',
-                    position: 'absolute',
-                    borderTopWidth: 0,
-                    elevation:0
-                },
-            })}>
-            <Tab.Screen name="Home" component={HomeStack} />
-         {/*//   <Tab.Screen name="MyFont" component={FontPreviewScreen} />*/}
-            <Tab.Screen name="Profile" component={ProfileStack} />
-        </Tab.Navigator>
-    );
-}
+                 // tabBar is a function that REPLACES the default tab bar with your custom one
+                 tabBar={({ navigation, state, descriptors, insets }) => (
+                     // navigation: object to navigate between screens
+                     // state: contains current tab index and all routes/tabs
+                     // descriptors: contains options for each screen
+                     // insets: safe area measurements (notch, home indicator areas)
 
-/* ✅ Root stack – tabs + ExerciseDetails accessible from ANYWHERE */
+                     <BottomNavigation.Bar
+                         // This is the actual bottom navigation bar component
+
+                         navigationState={state}
+                         // Passes the current state (which tab is active, all tabs info)
+
+                         safeAreaInsets={insets}
+                         // Ensures the bar doesn't overlap with iPhone notch/home indicator
+
+                         shifting={true}
+                         // FLOATING EFFECT: When true, active tab icon "floats up" and shows label
+                         // Inactive tabs hide their labels - creates that modern look you want
+
+                         onTabPress={({ route, preventDefault }) => {
+                             // This function runs when user taps a tab
+
+                             const event = navigation.emit({
+                                 type: 'tabPress',
+                                 target: route.key,
+                                 canPreventDefault: true,
+                             });
+                             // Announces "hey, a tab was pressed!" to React Navigation
+                             // Other parts of your app can listen to this event
+
+                             if (event.defaultPrevented) {
+                                 preventDefault();
+                                 // If something else says "don't navigate", we stop here
+                             } else {
+                                 navigation.dispatch({
+                                     ...CommonActions.navigate(route.name, route.params),
+                                     target: state.key,
+                                 });
+                                 // Actually navigate to the tapped screen
+                             }
+                         }}
+
+                         renderIcon={({ route, focused, color }) => {
+                             // This function decides WHAT ICON to show for each tab
+                             // route: info about this specific tab (name, etc)
+                             // focused: true if this tab is currently active
+                             // color: the color to use (purple for active, white for inactive)
+
+                             let iconName;
+                             if (route.name === 'Home') iconName = 'home';
+                             else if (route.name === 'Profile') iconName = 'person';
+                             // Picks the correct icon based on which tab this is
+
+                             return (
+                                 <Ionicons
+                                     name={iconName}
+                                     size={24}
+                                     color={color}  // Uses the color passed from BottomNavigation.Bar
+                                 />
+                             );
+                         }}
+
+                         getLabelText={({ route }) => {
+                             // This function decides what TEXT to show under the icon
+                             const { options } = descriptors[route.key];
+                             return options.title || route.name;
+                             // Uses the title from screen options, or falls back to screen name
+                         }}
+
+                         activeColor="purple"
+                         // Color for the active/selected tab
+
+                         inactiveColor="white"
+                         // Color for inactive/unselected tabs
+
+                         style={{
+                            backgroundColor: '#050112',
+                           //  backgroundColor: '#00000000',
+                             // Dark background color for the navigation bar
+                         }}
+                     />
+                 )}
+             >
+                 {/* These are   actual screens/tabs */}
+
+                 <Tab.Screen
+                     name="Home"  // This name is used in route.name above
+                     component={HomeStack}  // The component to show for this tab
+                     options={{ title: 'Home' }}  // Used by getLabelText
+                 />
+
+                 <Tab.Screen
+                     name="Profile"
+                     component={ProfileStack}
+                     options={{ title: 'Profile' }}
+                 />
+             </Tab.Navigator>
+         </PaperProvider>
+     );
+ }
+
+ /* ✅ Root stack – tabs + ExerciseDetails accessible from ANYWHERE */
 export default function App() {
     return (
         <GestureHandlerRootView style={{ flex: 1 }}>
@@ -107,20 +186,14 @@ export default function App() {
             <NavigationContainer>
                 <RootStack.Navigator
                     initialRouteName="Auth"
-                    screenOptions={{headerShown: false}}
+                    screenOptions={{headerShown: false,animation:'flip'}}
                  >
-                    {/*/!* Startup auth gate *!/*/}
-                    {/*<RootStack.Screen name="Splash" component={SplashScreen} />*/}
 
-                    {/*/!* Public auth screen *!/*/}
                     <RootStack.Screen name="Auth" component={AuthScreen} />
 
                     {/* Main app (tabs) */}
                     <RootStack.Screen name="MainTabs" component={MainTabs} />
 
-                    {/* ✅ GLOBAL ROUTES accessible from all tabs */}
-                    <RootStack.Screen name="ExerciseDetails" component={ExerciseDetails} />
-                    <RootStack.Screen name="TimerScreen" component={TimerScreen} />
                 </RootStack.Navigator>
 
         </NavigationContainer>

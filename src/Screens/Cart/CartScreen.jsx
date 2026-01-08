@@ -4,20 +4,21 @@ import {
     Text,
     Image,
     TouchableOpacity,
-    ScrollView,
+    ScrollView, Alert,
 } from "react-native";
 import Swipeable from "react-native-gesture-handler/Swipeable";
 import { Ionicons } from "@expo/vector-icons";
-import {UserContext} from "../UserContext";
+import {UserContext} from "../../Services/Context/UserContext";
 import * as Haptics from "expo-haptics";
 import {useNavigation} from "@react-navigation/native";
+import api from "../../Services/api";
+import {BaseURL} from "../../Constants";
+
 
 export default function CartScreen({}) {
-  //  const {payload}=route.params;
-    const { cartItems, updateQty, deleteItem } = useContext(UserContext);
-
-console.log("cart screen  cartitem", cartItems);
-    const renderDeleteAction = (item) => (
+     const { cartItems, updateQty, deleteItem,setOrders,setCartItems } = useContext(UserContext);
+console.log("cart.............................",cartItems);
+     const renderDeleteAction = (item) => (
         <View
             style={{
                 backgroundColor: "#FF5A5F",
@@ -31,23 +32,55 @@ console.log("cart screen  cartitem", cartItems);
             <Ionicons name="trash-outline" size={30} color="#fff" />
         </View>
     );
+    const payload = {
+        items: cartItems.map(item => ({
+            productId: item.productId,
+            quantity: item.qty,
+         }))
+    };
 
 
+    // const subtotal = cartItems.reduce(
+    //     (sum, item) => sum + item.totalPrice * item.qty,
+    //     0
+    // );
     const subtotal = cartItems.reduce(
-        (sum, item) => sum + item.totalPrice * item.qty,
+        (sum, item) => sum + item.price * item.qty,
         0
     );
 
-    const totalItems = cartItems.reduce(
-        (sum, item) => sum + item.qty,
-        0
-    );
 
-    console.log("subtotoallllllllllllll",subtotal);
-
-    const discount =subtotal*0.001;
-    const total = subtotal - discount;
+    const total = subtotal
+    console.log("total after everything ", payload);
     const navigation=useNavigation();
+
+    const PlaceOrder = async () => {
+        try {
+            console.log("total after everything ", payload);
+
+            const res = await api.post("/order", payload)
+                .then(r=>console.log("Result from endpoint.........................", r.data));
+            // const getOrders = await api.get(
+            //     "/orders"
+            // ).then(r=>console.log("response from get order ",r.data));
+
+            // 3️⃣ update state from backend
+          //  setOrders(getOrders.data);
+
+            // 4️⃣ clear cart
+            setCartItems([]);
+
+          //  const delay = (ms) => new Promise(resolve => setTimeout(resolve, ms));
+
+            Alert.alert("Success", "Order placed successfully");
+        //    await delay(1000);
+            navigation.navigate("HomeTwo");
+
+        } catch (err) {
+            console.error("error in order ",err)
+            Alert.alert("Order Error", err.response?.data?.message || "Failed");
+        }
+    };
     return (
         <View style={{ flex: 1, backgroundColor: "#F9F9F9", padding: 16 }}>
             {/* Header */}
@@ -84,7 +117,7 @@ console.log("cart screen  cartitem", cartItems);
                                     deleteItem(item.productId)
 
                                 }}
-                                activeOpacity={0.9}
+                                activeOpacity={0.4}
                             >
                                 {renderDeleteAction(item)}
                             </TouchableOpacity>
@@ -114,9 +147,9 @@ console.log("cart screen  cartitem", cartItems);
                                 <Text style={{ fontWeight: "700", fontSize: 16 }}>
                                     {item.name}
                                 </Text>
-                                <Text style={{ color: "#666" }}>Size: {item.basePrice}</Text>
+                                <Text style={{ color: "#666" }}>Size: {item.price}</Text>
                                 <Text style={{ fontWeight: "600", marginTop: 4 }}>
-                                    ${item.totalPrice}
+                                    ${item.price * item.qty}
                                 </Text>
                             </View>
 
@@ -206,8 +239,7 @@ console.log("cart screen  cartitem", cartItems);
                         }}
                     >
                         <Text>Discount:</Text>
-                        <Text>${discount}</Text>
-                    </View>
+                     </View>
 
                     <View
                         style={{
@@ -221,7 +253,14 @@ console.log("cart screen  cartitem", cartItems);
                 </View>
 
                 <TouchableOpacity
-                    onPress={()=>navigation.navigate("Checkout",{cartItems: cartItems})}
+                    onPress={()=>{
+                        console.log("checkout to order system press ");
+                        Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Heavy);
+                        PlaceOrder()
+                    }}
+
+
+
                     style={{
                         backgroundColor: "#FF914D",
                         padding: 18,
@@ -232,11 +271,10 @@ console.log("cart screen  cartitem", cartItems);
                     }}
                 >
                     <Text
-
-
                         style={{ color: "#fff", fontSize: 18, fontWeight: "700" }}>
                         Checkout
                     </Text>
+
                 </TouchableOpacity>
             </ScrollView>
         </View>

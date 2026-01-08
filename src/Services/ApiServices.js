@@ -1,10 +1,10 @@
 import axios from 'axios';
-import { BaseURL, secretKey, tokenGlobal } from './Constants';
+import { BaseURL, secretKey, tokenGlobal } from '../Constants';
 import { Alert } from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import JWT from 'expo-jwt';
 import {useContext, useState} from 'react';
-import {UserContext} from "./UserContext";
+import {UserContext} from "./Context/UserContext";
 //import {UserContext} from "./UserContext";
 //const [profileUser, setProfileUser] = useState({});
 
@@ -58,4 +58,21 @@ export const fetchFavourites = async (setSaved, token) => {
   } catch (error) {
     console.error('Error fetching favourites:', error);
   }
+};
+
+
+export const getTimeAgo = (dateString) => {
+    const now = new Date();
+    const created = new Date(dateString);
+
+    const diffMs = now - created;
+    const diffSeconds = Math.floor(diffMs / 1000);
+    const diffMinutes = Math.floor(diffSeconds / 60);
+    const diffHours = Math.floor(diffMinutes / 60);
+    const diffDays = Math.floor(diffHours / 24);
+
+    if (diffSeconds < 60) return "just now";
+    if (diffMinutes < 60) return `${diffMinutes} min ago`;
+    if (diffHours < 24) return `${diffHours} hr${diffHours > 1 ? "s" : ""} ago`;
+    return `${diffDays} day${diffDays > 1 ? "s" : ""} ago`;
 };

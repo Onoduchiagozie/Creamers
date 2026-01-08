@@ -1,13 +1,13 @@
-import React, {useState, useRef, useEffect, useContext} from "react";
+import React, {useState, useRef, useEffect, useContext, useMemo} from "react";
 import Modal from 'react-native-modal'
 import {View, Text, TouchableOpacity, ScrollView, Animated, Dimensions, Alert, FlatList} from "react-native";
 import SettingsScreen from "./Settings";
 import {useNavigation} from "@react-navigation/native";
 import {Ionicons} from "@expo/vector-icons";
-import api from "../api";
+import api from "../../Services/api";
 import {Image, ImageBackground} from 'expo-image';
-import {BaseURL} from "../Constants";
-import {UserContext} from "../UserContext";
+import {BaseURL} from "../../Constants";
+import {UserContext} from "../../Services/Context/UserContext";
 
 const { height } = Dimensions.get('window');
 // Configuration for the animation
@@ -17,7 +17,7 @@ const PROFILE_IMAGE_MAX_HEIGHT = 95;
 const PROFILE_IMAGE_MIN_HEIGHT = 50;
 
 export default function ProfileScreen() {
-    const { myCurrentUserObject } = useContext(UserContext);
+    const { myCurrentUserObject,orders } = useContext(UserContext);
 
 
     const [activeTab, setActiveTab] = useState("home");
@@ -28,6 +28,16 @@ export default function ProfileScreen() {
     useEffect(() => {
         fetchMeals();
     }, []);
+    const meals = useMemo(() => {
+        return orders.map(x => ({
+            id: x.id,
+            name: x.name,
+            description: x.description,
+            imageUrl: x.imageUrl,
+            rating: x.rating,
+            price: x.cost,
+        }));
+    }, [orders]);
 
 const gotodetail = (item) => {
     console.log("go to detail item",item);
@@ -37,8 +47,8 @@ const gotodetail = (item) => {
         try {
 
              const res = await api.get('/Product/GetAllSellerProducts');
-            console.log("Profile Screen get farmer product load", res.data);
-            setMyProducts(res.data);
+             console.log("Profile Screen get farmer product load", res.data);
+             setMyProducts(res.data);
 
         } catch (error) {
             console.log('Error fetching meals:', error.response?.data || error.message);
@@ -143,8 +153,18 @@ const gotodetail = (item) => {
 
     const renderTabContent = () => {
         if (activeTab === "home") {
+            console.log(
+
+                "the orders ",orders
+
+            )
             return (
                 <View style={{ padding: 20 }}>
+                    {
+                        orders.map(order => (
+                            <View key={order.id}></View>
+                        ))
+                    }
                     <Text style={{ fontSize: 20, fontWeight: "700", marginBottom: 20 }}>
                         New
                     </Text>
@@ -162,17 +182,9 @@ const gotodetail = (item) => {
                             alignItems:'space-around',
                             marginHorizontal: 20,
                         }} horizontal={true} data={
-                            [
-                                "https://i.ibb.co/T0pZqZp/chicken.png",
-                                "https://i.ibb.co/T0pZqZp/chicken.png",
-                                "https://i.ibb.co/T0pZqZp/chicken.png",
-                                "https://i.ibb.co/T0pZqZp/chicken.png",
-                                "https://i.ibb.co/T0pZqZp/chicken.png",
-                                "https://i.ibb.co/T0pZqZp/chicken.png",
-                                "https://i.ibb.co/T0pZqZp/chicken.png",
-                                "https://i.ibb.co/T0pZqZp/chicken.png",
-                                "https://i.ibb.co/T0pZqZp/chicken.png"
-                            ]}
+
+                                {orders}
+                            }
                                   renderItem={(item)=>
                                       <Image  source={{ uri:item }} style={{ width: 70, height: 70, borderRadius: 50, backgroundColor: "#fff",marginHorizontal:10 }} ></Image>
                         }/>
