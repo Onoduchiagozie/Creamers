@@ -92,7 +92,7 @@ export const UserProvider = ({ children }) => {
         const checkStoredAuth = async () => {
             try {
                 const storedToken = await AsyncStorage.getItem('auth_token');
-
+console.log('Stored token:', storedToken);
                 if (storedToken && storedToken.length > 20) {
                     const decoded = JWT.decode(storedToken, secretKey);
 

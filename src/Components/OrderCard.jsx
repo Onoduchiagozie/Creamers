@@ -8,8 +8,8 @@ const OrderCard = ({ order }) => {
     return (
         <Animatable.View
             animation={STATUS_CONFIG[order.status].animation}
-            iterationCount="infinite"
-            duration={2000}
+            iterationCount={3}
+            duration={1500}
 
             key={order.status}
             style={{

@@ -1,398 +1,318 @@
-import React, {useState, useRef, useEffect, useContext, useMemo} from "react";
-import Modal from 'react-native-modal'
-import {View, Text, TouchableOpacity, ScrollView, Animated, Dimensions, Alert, FlatList} from "react-native";
-import SettingsScreen from "./Settings";
-import {useNavigation} from "@react-navigation/native";
+import React, {useContext, useEffect, useState} from "react";
+import {ActivityIndicator, Dimensions, FlatList, Image, Platform, Text, TouchableOpacity, View,} from "react-native";
+import Animated, {Easing, useAnimatedStyle, useSharedValue, withTiming,} from "react-native-reanimated";
+import * as Haptics from "expo-haptics";
 import {Ionicons} from "@expo/vector-icons";
-import api from "../../Services/api";
-import {Image, ImageBackground} from 'expo-image';
-import {BaseURL} from "../../Constants";
+import {useNavigation} from "@react-navigation/native";
 import {UserContext} from "../../Services/Context/UserContext";
 
-const { height } = Dimensions.get('window');
-// Configuration for the animation
-const HEADER_MAX_HEIGHT = 280;
-const HEADER_MIN_HEIGHT = 100;
-const PROFILE_IMAGE_MAX_HEIGHT = 95;
-const PROFILE_IMAGE_MIN_HEIGHT = 50;
+import api from "../../Services/api";
+import AddedProductItem from "../../Components/AddedProductListr";
+import OrderedItemList from "./Comp/OrderedItemList";
+import useLocation from "../../Location";
+import {LinearGradient} from "expo-linear-gradient";
+
+const { width } = Dimensions.get("window");
+
+const TABS = [
+    { icon: "grid-outline" },
+    { icon: "heart-outline" },
+    { icon: "bookmark-outline" },
+];
+
+// Dummy data for likes
+const DUMMY_PRODUCTS = [
+    {
+        id: "d1",
+        imageUrl: "https://picsum.photos/200/200?random=1",
+        name: "Wireless Headphones",
+        cost: "15000",
+    },
+    {
+        id: "d2",
+        imageUrl: "https://picsum.photos/200/200?random=2",
+        name: "Smart Watch",
+        cost: "25000",
+    },
+    {
+        id: "d3",
+        imageUrl: "https://picsum.photos/200/200?random=3",
+        name: "Phone Case",
+        cost: "3500",
+    },
+];
+
 
 export default function ProfileScreen() {
-    const { myCurrentUserObject,orders } = useContext(UserContext);
+    const navigation = useNavigation();
+    const { myCurrentUserObject, addToCart,orders } = useContext(UserContext);
+
+    const [activeTab, setActiveTab] = useState(0);
+    const [addedProducts, setAddedProducts] = useState([]);
+    const [orderedItems, setOrderedItems] = useState([]);
+    const [loading, setLoading] = useState(true);
+    const [fav, setFav] = useState([]);
 
 
-    const [activeTab, setActiveTab] = useState("home");
-     const [open, setOpen] = useState(false);
-     const [myProducts, setMyProducts] = useState([]);
+
+    const { address, loadingLocation } = useLocation();
 
 
+    const translateX = useSharedValue(0);
+
+    // Fetch data
     useEffect(() => {
-        fetchMeals();
+        (async () => {
+            try {
+                const added = await api.get("/Product/GetAllSellerProducts");
+                const ordered = await api.get("/order/getorders");
+                const favourite = await api.get("Favourites/GetUserFavourites")
+
+                console.log("......................",ordered.data);
+                setAddedProducts(added.data);
+                setOrderedItems(ordered.data);
+                setFav(favourite.data);
+                console.log(favourite.data);
+            } catch (e) {
+                console.error(e);
+            } finally {
+                setLoading(false);
+            }
+        })();
     }, []);
-    const meals = useMemo(() => {
-        return orders.map(x => ({
-            id: x.id,
-            name: x.name,
-            description: x.description,
-            imageUrl: x.imageUrl,
-            rating: x.rating,
-            price: x.cost,
-        }));
-    }, [orders]);
 
-const gotodetail = (item) => {
-    console.log("go to detail item",item);
-  navigation.navigate("FoodDetail",{meal:item})
-}
-    const fetchMeals = async () => {
-        try {
+    const switchTab = (index) => {
+        if (index === activeTab) return;
 
-             const res = await api.get('/Product/GetAllSellerProducts');
-             console.log("Profile Screen get farmer product load", res.data);
-             setMyProducts(res.data);
+        setActiveTab(index);
 
-        } catch (error) {
-            console.log('Error fetching meals:', error.response?.data || error.message);
-        }
+        translateX.value = withTiming(-width * index, {
+            duration: 420,
+            easing: Easing.out(Easing.exp),
+        });
+
+        Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
     };
 
+    const pagerStyle = useAnimatedStyle(() => ({
+        transform: [{ translateX: translateX.value }],
+    }));
 
-    // Animation value reference
-    const scrollY = useRef(new Animated.Value(0)).current;
-
-    // 1. Header Height Interpolation
-    const headerHeight = scrollY.interpolate({
-        inputRange: [0, HEADER_MAX_HEIGHT - HEADER_MIN_HEIGHT],
-        outputRange: [HEADER_MAX_HEIGHT, HEADER_MIN_HEIGHT],
-        extrapolate: 'clamp'
-    });
-
-    // 2. Profile Image Size Interpolation
-    const profileImageHeight = scrollY.interpolate({
-        inputRange: [0, HEADER_MAX_HEIGHT - HEADER_MIN_HEIGHT],
-        outputRange: [PROFILE_IMAGE_MAX_HEIGHT, PROFILE_IMAGE_MIN_HEIGHT],
-        extrapolate: 'clamp'
-    });
-
-    // 3. Profile Image Margin/Position Interpolation (to move it up slightly)
-    const profileImageMarginTop = scrollY.interpolate({
-        inputRange: [0, HEADER_MAX_HEIGHT - HEADER_MIN_HEIGHT],
-        outputRange: [20, 5],
-        extrapolate: 'clamp'
-    });
-
-    // 4. Opacity for items we want to hide when scrolling up (Location text, etc)
-    const headerContentOpacity = scrollY.interpolate({
-        inputRange: [0, (HEADER_MAX_HEIGHT - HEADER_MIN_HEIGHT) / 2],
-        outputRange: [1, 0],
-        extrapolate: 'clamp'
-    });
-
-
-    async function deleteProduct(id) {
-        try {
-
-            console.log('Deleting product with ID:', id);
-
-            // Correct syntax: use parentheses, not backticks for function call
-            const url = `${BaseURL}/Product/${id}`;
-            console.log('DELETE URL:', url);
-            console.log('Product ID:', id);
-
-            const res = await api.delete(url, {
-                headers: { "Content-Type": "application/json" },
-            });
-
-            Alert.alert("Success", res.data.message || "Product deleted successfully");
-
-            // Optional: Refresh your product list here
-            // fetchProducts();
-
-            return res.data;
-        } catch (error) {
-            console.log("API Error:", error.response?.data || error.message);
-            console.log("API Error:", error);
-            Alert.alert(
-                "Error",
-                error.response?.data?.message || "Failed to delete product"
-            );
-            throw error;
-        }
-    }
-
-    const handleDelete = async (productId) => {
-        Alert.alert(
-            "Confirm Delete",
-            "Are you sure you want to delete this product?",
-            [
-                {
-                    text: "Cancel",
-                    style: "cancel"
-                },
-                {
-                    text: "Delete",
-                    style: "destructive",
-                    onPress: async () => {
-                        try {
-                            console.log('Deleting product with ID IN HANDLE DELETE FUNCTION:', productId);
-                            await deleteProduct(productId);
-                            // Refresh your list or navigate away
-                        } catch (error) {
-                            // Error already handled in deleteProduct
-                        }
-                    }
-                }
-            ]
-        );
-
-    }
-
-
-
-
-
-
-    const renderTabContent = () => {
-        if (activeTab === "home") {
-            console.log(
-
-                "the orders ",orders
-
-            )
-            return (
-                <View style={{ padding: 20 }}>
-                    {
-                        orders.map(order => (
-                            <View key={order.id}></View>
-                        ))
-                    }
-                    <Text style={{ fontSize: 20, fontWeight: "700", marginBottom: 20 }}>
-                        New
-                    </Text>
-                    <View
-                        style={{
-                            flexDirection: "row", justifyContent: "space-between",
-                            alignItems: "center", marginBottom: 30 }}>
-                        <Text style={{ fontSize: 28 }}>⬅</Text>
-                        <FlatList showsHorizontalScrollIndicator={false} pagingEnabled={true}
-                                  style={{
-                                      flexDirection:'row',
-                                       borderRadius: 30,
-                        }} contentContainerStyle={{
-                             justifyContent:'space-around',
-                            alignItems:'space-around',
-                            marginHorizontal: 20,
-                        }} horizontal={true} data={
-
-                                {orders}
-                            }
-                                  renderItem={(item)=>
-                                      <Image  source={{ uri:item }} style={{ width: 70, height: 70, borderRadius: 50, backgroundColor: "#fff",marginHorizontal:10 }} ></Image>
-                        }/>
-                   <Text style={{ fontSize: 28 }}>➡</Text>
-                    </View>
-                    <Text style={{ textAlign: "center", fontSize: 20, fontWeight: "700", marginBottom: 100 }}>
-                        Top Sales
-                    </Text>
-                    {/* Add height to allow scrolling to test animation */}
-                    <View style={{height: 500}} />
-                </View>
-            );
-        }
-        if (activeTab === "comments") {
-            return (
-                <View style={{ padding: 20 }}>
-                    <Text style={{ fontSize: 22, fontWeight: "700" }}>Comments</Text>
-                    {[1,2].map(i => (
-                        <View key={i} style={{marginBottom: 20}}>
-                            <Text style={{ marginTop: 20 }}>• “Best food I ever tasted!”</Text>
-                        </View>
-                    ))}
-                </View>
-            );
-        }
-        if (activeTab === "Basket") {
-            return (
-                <View style={{ padding: 20 }}>
-                    <Text style={{ fontSize: 22, fontWeight: "700" }}>Added Product</Text>
-
-                    {myProducts.map((item, index) => (
-                        <View
-                            key={index}
-                            style={{
-                                marginTop: 20,
-                                flexDirection: "row",
-                                alignItems: "center",
-                                padding: 15,
-                                backgroundColor: "#9c9191",
-                                borderRadius: 12
-                            }}
-                        >
-                            <ImageBackground
-
-                                source={{ uri: `${BaseURL}${item.productImageBase64}` }}
-                                style={{ width: 60, height: 60, borderRadius: 50, marginRight: 15 }}
-                            />
-
-                            {/* MAIN ROW THAT SPLITS LEFT AND RIGHT */}
-                            <View style={{ flexDirection: "row", justifyContent: "space-between", flex: 1 }}>
-
-                                {/* LEFT: NAME + PRICE */}
-                                <TouchableOpacity onPress={() => gotodetail(item)}>
-                                    <Text style={{ fontWeight: "700", fontSize: 16 }}>
-                                        {item.name}
-                                    </Text>
-
-                                    <Text style={{ marginTop: 5 }}>
-                                        ${item.cost}
-                                    </Text>
-                                </TouchableOpacity>
-
-                                {/* RIGHT: DELETE BUTTON */}
-                                <TouchableOpacity
-                                    style={{ height: 35, width: 35, alignItems: "center" }}
-                                    onPress={() => handleDelete(item.id)}
-                                >
-                                    <Text style={{ fontWeight: "700", fontSize: 26 }}>🗑</Text>
-                                </TouchableOpacity>
-
-                            </View>
-
-                        </View>
-
-                    ))}
-
-                 </View>
-            );
-        }
-
+    // Delete product handler
+    const handleDeleteProduct = async (id) => {
+        await api.delete(`/Product/${id}`);
+        setAddedProducts((p) => p.filter((x) => x.id !== id));
     };
-const navigation=useNavigation();
+
+    // Order again handler
+    const handleOrderAgain = (item) => {
+        debugger
+        addToCart({
+            productId: item.productId,
+            name: item.productName,
+            qty: item.quantity,
+            price: item.lineTotal / item.quantity,
+        });
+    };
+
     return (
-        <View style={{ flex: 1,                    backgroundColor: "#ede7d8",
-        }}>
-
-            {/* ANIMATED DARK HEADER */}
-            <Animated.View
+        <LinearGradient
+            // colors={['#d7d2cc', '#04121e']}
+            // colors={['#d7d2cc', 'rgba(5,0,0,0.91)']}
+            colors={['#d7d2cc', '#f6f1f1']}
+            start={{ x: 0, y: 0 }}
+            end={{ x: 1, y: 0 }}
+            style={{ flex: 1 }}
+        >
+        <View style={{ flex: 1}}>
+            {/* HEADER */}
+            <View
                 style={{
-                    height: headerHeight, // Dynamic Height
-                     alignItems: "center",
-                    paddingTop: 50,
-                    overflow: 'hidden',
-                    zIndex: 1
+                    paddingTop: 60,
+                    alignItems: "center",
+                    justifyContent: "space-between",
+
                 }}
             >
-                {/* Fixed position buttons */}
-                <TouchableOpacity style={{ position: "absolute", left: 20, top: 50, zIndex: 10 }}
-                                  onPress={()=>navigation.goBack()}>
-                    <Text style={{ color: "#fff", fontSize: 26 }}>←</Text>
+                <TouchableOpacity
+                    onPress={() => navigation.goBack()}
+                    style={{ position: "absolute", left: 20, top: 60 }}
+                >
+                    <Ionicons name="arrow-back" size={24} />
                 </TouchableOpacity>
 
-                <TouchableOpacity  onPress={() =>{
-                    setOpen(true)
-                    navigation.navigate("Settings",{});
-                }} style={{ position: "absolute", right: 20, top: 50, zIndex: 10,elevation:10,shadowColor:'green' }}>
-                    <Ionicons name="settings-outline" size={28} color="black" />
-                </TouchableOpacity>
-                                {/* Animated Image */}
-                <Animated.Image
-                    source={{ uri: "https://i.pravatar.cc/300" }}
-                    style={{
-                        width: profileImageHeight,
-                        height: profileImageHeight,
-                        borderRadius: 100,
-                        marginTop: profileImageMarginTop,
-                         borderWidth: 3,
-                        borderColor: "#41d121",
-                    }}
+                <Image
+                    source={{ uri: "https://i.pravatar.cc/400" }}
+                    style={{ width: 90, height: 90, borderRadius: 45 }}
                 />
 
-                <Text style={{ color: "rgba(5,0,0,0.91)", fontSize: 22, marginTop: 15, fontWeight: "700" }}>
+                <Text style={{ fontSize: 18, fontWeight: "600", marginTop: 12 }}>
                     {myCurrentUserObject.username}
                 </Text>
 
-                {/* This text will fade out on scroll */}
-                <Animated.Text style={{ color: "rgba(5,0,0,0.91)", marginTop: 5, opacity: headerContentOpacity }}>
-                    Greater New York
-                </Animated.Text>
-                {/*<Modal*/}
-                {/*                isVisible={open}*/}
-                {/*                onBackdropPress={() => setOpen(false)}*/}
-                {/*                onSwipeComplete={() => setOpen(false)}*/}
-                {/*                swipeDirection="down"*/}
-                {/*                style={{*/}
-                {/*                    justifyContent: "flex-end",*/}
-                {/*                    margin: 0,*/}
-                {/*                    backgroundColor:'red'*/}
-                {/*                }}*/}
-                {/*            >*/}
-                {/*                <View*/}
-                {/*                    style={{*/}
-                {/*                        backgroundColor: "#2e8a19",*/}
-                {/*                        height: "80%",*/}
-                {/*                        borderTopLeftRadius: 25,*/}
-                {/*                        borderTopRightRadius: 25,*/}
-                {/*                        paddingTop: 20,*/}
-                {/*                    }}*/}
-                {/*                >*/}
-                {/*                    /!* Close button *!/*/}
-                {/*                    <TouchableOpacity*/}
-                {/*                        onPress={() => setOpen(false)}*/}
-                {/*                        style={{ alignSelf: "flex-end", paddingRight: 20 }}*/}
-                {/*                    >*/}
-                {/*                        <Text style={{ fontSize: 25 }}>✕</Text>*/}
-                {/*                    </TouchableOpacity>*/}
+                <Text style={{ fontSize: 12, color: "#777", marginTop: 4 }}>
+                    {loading ? "Loading location..." : address}
+                </Text>
+            </View>
 
-                {/*                    /!* Scrollable content *!/*/}
-                {/* */}
-                {/*                </View>*/}
-                {/*            </Modal>*/}
-
-            </Animated.View>
-
-            {/* SCROLLABLE CONTENT (The Yellow Part) */}
-            <ScrollView
+             <View
                 style={{
-                    flex: 1,
-                    backgroundColor: "rgb(216,122,13)",
-                     borderTopLeftRadius: 40,
-                    borderTopRightRadius: 40
-                 }}
-
-                // Attach scroll event to animation
-                scrollEventThrottle={16}
-                onScroll={Animated.event(
-                    [{ nativeEvent: { contentOffset: { y: scrollY } } }],
-                    { useNativeDriver: false } // false because we animate layout properties like height
-                )}
+                    flexDirection: "row",
+                    justifyContent: "space-around",
+                    marginTop: 30,
+                    paddingHorizontal: 30,
+                }}
             >
-                {/* TAB BAR */}
-                <View style={{ flexDirection: "row", justifyContent: "space-around" ,marginTop:20
+                {TABS.map((tab, i) => {
+                    const isActive = activeTab === i;
 
-                }}>
-                    {/* HOME TAB */}
-                    <TouchableOpacity onPress={() => setActiveTab("home")} style={{ alignItems: "center" }}>
-                        <Text style={{ fontSize: 17 }}>🏠</Text>
-                        <Text style={{ marginTop: 3, fontWeight: activeTab === "home" ? "700" : "400", textDecorationLine: activeTab === "home" ? "underline" : "none" }}>Home</Text>
-                    </TouchableOpacity>
+                    return (
+                        <TouchableOpacity
+                            key={i}
+                            onPress={() => switchTab(i)}
+                            activeOpacity={0.85}
+                        >
+                            <View
+                                style={{
+                                    width: 56,
+                                    height: 56,
+                                    borderRadius: 16,
+                                    alignItems: "center",
+                                    justifyContent: "center",
+                                    backgroundColor: isActive ? "#fff" : "transparent",
 
-                    {/* COMMENTS TAB */}
-                    <TouchableOpacity onPress={() => setActiveTab("comments")} style={{ alignItems: "center" }}>
-                        <Text style={{ fontSize: 17 }}>💬</Text>
-                        <Text style={{ marginTop: 3, fontWeight: activeTab === "comments" ? "700" : "400", textDecorationLine: activeTab === "comments" ? "underline" : "none" }}>Comments</Text>
-                    </TouchableOpacity>
+                                    ...(isActive
+                                        ? Platform.select({
+                                            ios: {
+                                                shadowColor: "#000",
+                                                shadowOpacity: 0.18,
+                                                shadowRadius: 12,
+                                                shadowOffset: { width: 0, height: 6 },
+                                            },
+                                            android: {
+                                                elevation: 12,
+                                            },
+                                        })
+                                        : {}),
+                                }}
+                            >
+                                <Ionicons
+                                    name={tab.icon}
+                                    size={26}
+                                    color={isActive ? "#000" : "#999"}
+                                />
+                            </View>
+                        </TouchableOpacity>
+                    );
+                })}
+            </View>
 
-                    {/* CART TAB */}
-                    <TouchableOpacity onPress={() => setActiveTab("Basket")} style={{ alignItems: "center" }}>
-                        <Text style={{ fontSize: 17 }}>🛒</Text>
-                        <Text style={{ marginTop: 3, fontWeight: activeTab === "Basket" ? "700" : "400", textDecorationLine: activeTab === "Basket" ? "underline" : "none" }}>Basket</Text>
-                    </TouchableOpacity>
+            {/* CONTENT PAGER */}
+            {loading ? (
+                <View style={{ flex: 1, justifyContent: "center", alignItems: "center" }}>
+                    <ActivityIndicator size="large" />
                 </View>
+            ) : (
+                <Animated.View
+                    style={[
+                        {
+                            flexDirection: "row",
+                            width: width * 2,
+                            flex: 1,
+                            marginTop: 24,
+                        },
+                        pagerStyle,
+                    ]}
+                >
+                    {/* Gallery - Added Products */}
+                    <View style={{ width }}>
+                        <Text
+                            style={{
+                                fontSize: 18,
+                                fontWeight: "600",
+                                paddingHorizontal: 20,
+                                marginBottom: 16,
+                            }}
+                        >
+                           Added Products
+                        </Text>
+                        <FlatList
+                            data={addedProducts}
+                            keyExtractor={(item) => item.id}
+                            ListHeaderComponent={
+                            <Text style={{margin:20,fontWeight:'bold'}}>Swipe to Delete</Text>
+                            }
+                            renderItem={({ item }) => (
+                                <AddedProductItem
+                                    item={item}
+                                    onDelete={handleDeleteProduct}
+                                    cardWidth={width - 30}
+                                />
+                            )}
+                            contentContainerStyle={{  }}
+                            showsVerticalScrollIndicator={false}
 
-                {/* Content below tab bar */}
-                <View style={{ minHeight: height }}>
-                    {renderTabContent()}
-                </View>
-            </ScrollView>
-        </View>
+                        />
+                    </View>
+
+                    {/* Likes - Dummy Products */}
+                    <View style={{ width }}>
+                        <Text
+                            style={{
+                                fontSize: 18,
+                                fontWeight: "600",
+                                paddingHorizontal: 20,
+                                marginBottom: 16,
+                            }}
+                        >
+                            Likes
+                        </Text>
+                        <FlatList
+                            data={fav}
+                            keyExtractor={(item) => item.id}
+                            renderItem={({ item }) => (
+                                <AddedProductItem
+                                    item={item}
+                                    onDelete={(id) => console.log("Delete", id)}
+                                    cardWidth={width - 40}
+                                />
+                            )}
+                            contentContainerStyle={{ paddingHorizontal: 20 }}
+                            showsVerticalScrollIndicator={false}
+                        />
+                    </View>
+
+                    {/* Saved - Ordered Items */}
+                    <View style={{ width }}>
+                        <Text
+                            style={{
+                                fontSize: 18,
+                                fontWeight: "600",
+                                paddingHorizontal: 20,
+                                marginBottom: 16,
+                            }}
+                        >
+                            Orders
+                        </Text>
+                        <FlatList
+                            data={orderedItems}
+                            keyExtractor={(item, idx) => `${item.orderId}-${idx}`}
+                            renderItem={({ item }) => (
+                                <OrderedItemList
+                                    item={item}
+                                    onOrderAgain={handleOrderAgain}
+                                    cardWidth={width - 40}
+                                />
+                            )}
+                            ListHeaderComponent={
+                                <Text style={{margin:20,fontWeight:'bold'}}>Swipe to Order Again</Text>
+                            }
+                            contentContainerStyle={{ }}
+                            showsVerticalScrollIndicator={false}
+                        />
+                    </View>
+                </Animated.View>
+            )}
+        </View></LinearGradient>
     );
 }

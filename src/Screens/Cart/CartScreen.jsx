@@ -59,21 +59,11 @@ console.log("cart.............................",cartItems);
             console.log("total after everything ", payload);
 
             const res = await api.post("/order", payload)
-                .then(r=>console.log("Result from endpoint.........................", r.data));
-            // const getOrders = await api.get(
-            //     "/orders"
-            // ).then(r=>console.log("response from get order ",r.data));
+                .then(r=>console.log("Result from endpoint...", r.data));
 
-            // 3️⃣ update state from backend
-          //  setOrders(getOrders.data);
-
-            // 4️⃣ clear cart
             setCartItems([]);
 
-          //  const delay = (ms) => new Promise(resolve => setTimeout(resolve, ms));
-
             Alert.alert("Success", "Order placed successfully");
-        //    await delay(1000);
             navigation.navigate("HomeTwo");
 
         } catch (err) {
@@ -258,8 +248,6 @@ console.log("cart.............................",cartItems);
                         Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Heavy);
                         PlaceOrder()
                     }}
-
-
 
                     style={{
                         backgroundColor: "#FF914D",

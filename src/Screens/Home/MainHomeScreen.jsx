@@ -27,8 +27,9 @@ import api from "../../Services/api";
 import {getTimeAgo} from "../../Services/ApiServices";
 import AnimatedText from "react-native-animated-text";
 import HomeCategory from "../../Components/HomeCategory";
+import HomeHeader from "./comp/HomeHeader";
 
-const HomeScreenTwo = () => {
+const MainHomeScreen = () => {
     const {width} = Dimensions.get('window');
     const navigation = useNavigation();
 
@@ -71,62 +72,19 @@ const getOrders = async () => {
                 style={{flex: 1}}
             >
 
-                     <ScrollView contentContainerStyle={{padding: 25, marginBottom: 40}}>
+                     <ScrollView contentContainerStyle={{padding: 20, marginBottom: 40}}>
+<HomeHeader/>
 
-                        {/* Header */}
-                        <View style={{
-                            flexDirection: 'row',
-                            justifyContent: 'space-between',
-                            alignItems: 'center',
-                            marginBottom: 20
-                        }}>
-                            <Text style={{fontSize: 18, fontWeight: 'bold',fontStyle:'casual'}}> Hi {myCurrentUserObject.username}</Text>
-                            <Feather name="bell" size={24} color="red"/>
-                        </View>
 
                         {/* Search */}
-                        <View style={{flexDirection: 'row', justifyContent: 'space-between', marginBottom: 25}}>
-                            <View style={{
-                                flex: 1,
-                                flexDirection: 'row',
-                                backgroundColor: '#fff',
-                                borderRadius: 45,
-                                padding: 12,
-                                alignItems: 'center',
-                                marginRight: 10,
-                                shadowColor: '#000',
-                                shadowOpacity: 0.05,
-                                shadowRadius: 5
-                            }}>
-                                <TextInput
-                                    placeholderTextColor={red600}
-                                    textAlign={'center'}
-                                    placeholder={`Hi ${myCurrentUserObject.username}`}
-                                    style={{flex: 1,
-                                        fontWeight: 'bold',fontSize: 12,borderColor:'red'}}
-                                />
-                            </View>
-                            <TouchableOpacity
-                                style={{
-                                    backgroundColor: '#fff',
-                                    padding: 19,
-                                    borderRadius: 15
-                                }}>
-                                <Ionicons onPress={() => navigation.navigate("Cart")}
-                                          name="cart"
-                                          size={20}
-                                          color="red"
-                                />
-                            </TouchableOpacity>
-                        </View>
 
-                        {/* Order Status Cards */}
+
                         {orders.length > 0 && (
                             <OrderHeadline
                                 orders={orders.map(order => ({
                                     id: order.orderId,
                                     status: order.status,
-                                    items: order.totalItems,
+                                   items: order.totalItems,
                                     total: order.total,
                                     createdAt: order.createdAt,
                                     timeAgo: getTimeAgo(order.createdAt),
@@ -320,4 +278,4 @@ const getOrders = async () => {
 
 
 
-export default HomeScreenTwo;
+export default MainHomeScreen;

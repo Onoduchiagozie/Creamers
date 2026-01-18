@@ -29,14 +29,14 @@ export default function AddProductScreen() {
     // ✅ Product type
     const [productType, setProductType] = useState("Cake");
 
-// ✅ Toggles (ONLY THESE)
-    const [enableSweetness, setEnableSweetness] = useState(false);
-    const [enableFlavour, setEnableFlavour] = useState(false);
-    const [enableToppings, setEnableToppings] = useState(false);
-
-// ✅ Sweetness prices (Cake only)
-    const [sweetnessNormalPrice, setSweetnessNormalPrice] = useState("");
-    const [sweetnessExtraPrice, setSweetnessExtraPrice] = useState("");
+// // ✅ Toggles (ONLY THESE)
+//     const [enableSweetness, setEnableSweetness] = useState(false);
+//     const [enableFlavour, setEnableFlavour] = useState(false);
+//     const [enableToppings, setEnableToppings] = useState(false);
+//
+// // ✅ Sweetness prices (Cake only)
+//     const [sweetnessNormalPrice, setSweetnessNormalPrice] = useState("");
+//     const [sweetnessExtraPrice, setSweetnessExtraPrice] = useState("");
 
 // ✅ Flavours
     const [flavours, setFlavours] = useState([
@@ -78,51 +78,51 @@ export default function AddProductScreen() {
 
         const customizations = [];
 
-        if (productType === "Cake" && enableSweetness) {
-            customizations.push({
-                name: "Sweetness",
-                isRequired: true,
-                maxSelections: 1,
-                options: [
-                    {
-                        name: "Normal",
-                        priceIncrement: Number(sweetnessNormalPrice || 0),
-                    },
-                    {
-                        name: "Extra",
-                        priceIncrement: Number(sweetnessExtraPrice || 0),
-                    },
-                ],
-            });
-        }
+        // if (productType === "Cake" && enableSweetness) {
+        //     customizations.push({
+        //         name: "Sweetness",
+        //         isRequired: true,
+        //         maxSelections: 1,
+        //         options: [
+        //             {
+        //                 name: "Normal",
+        //                 priceIncrement: Number(sweetnessNormalPrice || 0),
+        //             },
+        //             {
+        //                 name: "Extra",
+        //                 priceIncrement: Number(sweetnessExtraPrice || 0),
+        //             },
+        //         ],
+        //     });
+        // }
 
-        if (enableFlavour) {
-            customizations.push({
-                name: "Flavour",
-                isRequired: false,
-                maxSelections: 1,
-                options: flavours
-                    .filter(f => f.price !== "")
-                    .map(f => ({
-                        name: f.name,
-                        priceIncrement: Number(f.price),
-                    })),
-            });
-        }
+        // if (enableFlavour) {
+        //     customizations.push({
+        //         name: "Flavour",
+        //         isRequired: false,
+        //         maxSelections: 1,
+        //         options: flavours
+        //             .filter(f => f.price !== "")
+        //             .map(f => ({
+        //                 name: f.name,
+        //                 priceIncrement: Number(f.price),
+        //             })),
+        //     });
+        // }
 
-        if (enableToppings) {
-            customizations.push({
-                name: "Toppings",
-                isRequired: false,
-                maxSelections: 2,
-                options: toppings
-                    .filter(t => t.price !== "")
-                    .map(t => ({
-                        name: t.name,
-                        priceIncrement: Number(t.price),
-                    })),
-            });
-        }
+        // if (enableToppings) {
+        //     customizations.push({
+        //         name: "Toppings",
+        //         isRequired: false,
+        //         maxSelections: 2,
+        //         options: toppings
+        //             .filter(t => t.price !== "")
+        //             .map(t => ({
+        //                 name: t.name,
+        //                 priceIncrement: Number(t.price),
+        //             })),
+        //     });
+        // }
 
 
         const payload = {
@@ -131,7 +131,7 @@ export default function AddProductScreen() {
             Description: description,
                ProductImageBase64: imageBase64 ? imageBase64 : "",
             Location: "Lagos",
-            Customizations: customizations,
+          //  Customizations: customizations,
 
 
         };
@@ -140,7 +140,7 @@ console.log("Here is the payload o o o",payload);
 
 
         try {
-            const res = await api.post(`${BaseURL}/Product/AddProduct`, payload, {
+            const res = await api.post("/Product/AddProduct", payload, {
                 headers: { "Content-Type": "application/json" },
             });
             Alert.alert("Success", res.data.message || "Product created");
@@ -195,91 +195,6 @@ console.log("Here is the payload o o o",payload);
                 <Text style={{ fontSize: 18, fontWeight: "700", marginVertical: 15 }}>
                     Product Options
                 </Text>
-
-                {/* ================= SWEETNESS (CAKE ONLY) ================= */}
-                {productType === "Cake" && (
-                    <>
-                        <TouchableOpacity
-                            onPress={() => setEnableSweetness(!enableSweetness)}
-                            style={{ marginBottom: 8 }}
-                        >
-                            <Text>{enableSweetness ? "✅" : "⬜"} Sweetness</Text>
-                        </TouchableOpacity>
-
-                        {enableSweetness && (
-                            <View style={{ marginBottom: 12 }}>
-                                <TextInput
-                                    placeholder="Normal sweetness price"
-                                    keyboardType="numeric"
-                                    value={sweetnessNormalPrice}
-                                    onChangeText={setSweetnessNormalPrice}
-                                    style={{ borderWidth: 1, padding: 8, marginBottom: 6 }}
-                                />
-                                <TextInput
-                                    placeholder="Extra sweetness price"
-                                    keyboardType="numeric"
-                                    value={sweetnessExtraPrice}
-                                    onChangeText={setSweetnessExtraPrice}
-                                    style={{ borderWidth: 1, padding: 8 }}
-                                />
-                            </View>
-                        )}
-                    </>
-                )}
-                <TouchableOpacity
-                    onPress={() => setEnableFlavour(!enableFlavour)}
-                    style={{ marginBottom: 8 }}
-                >
-                    <Text>{enableFlavour ? "✅" : "⬜"} Flavour</Text>
-                </TouchableOpacity>
-
-                {enableFlavour && (
-                    <View style={{ marginBottom: 12 }}>
-                        {flavours.map((f, index) => (
-                            <View key={index} style={{ flexDirection: "row", marginBottom: 6 }}>
-                                <Text style={{ width: 80 }}>{f.name}</Text>
-                                <TextInput
-                                    placeholder="Price"
-                                    keyboardType="numeric"
-                                    value={f.price}
-                                    onChangeText={text => {
-                                        const copy = [...flavours];
-                                        copy[index].price = text;
-                                        setFlavours(copy);
-                                    }}
-                                    style={{ borderWidth: 1, padding: 6, flex: 1 }}
-                                />
-                            </View>
-                        ))}
-                    </View>
-                )}
-                <TouchableOpacity
-                    onPress={() => setEnableToppings(!enableToppings)}
-                    style={{ marginBottom: 8 }}
-                >
-                    <Text>{enableToppings ? "✅" : "⬜"} Toppings</Text>
-                </TouchableOpacity>
-
-                {enableToppings && (
-                    <View style={{ marginBottom: 12 }}>
-                        {toppings.map((t, index) => (
-                            <View key={index} style={{ flexDirection: "row", marginBottom: 6 }}>
-                                <Text style={{ width: 80 }}>{t.name}</Text>
-                                <TextInput
-                                    placeholder="Price"
-                                    keyboardType="numeric"
-                                    value={t.price}
-                                    onChangeText={text => {
-                                        const copy = [...toppings];
-                                        copy[index].price = text;
-                                        setToppings(copy);
-                                    }}
-                                    style={{ borderWidth: 1, padding: 6, flex: 1 }}
-                                />
-                            </View>
-                        ))}
-                    </View>
-                )}
 
                 {/* Price Input */}
                 <Text style={{ fontWeight: "600", marginBottom: 5 }}>Price</Text>

@@ -2,8 +2,8 @@ import React, { useEffect, useState } from "react";
 import { View, ActivityIndicator, Alert, Text, StyleSheet } from "react-native";
 import { WebView } from "react-native-webview";
 import axios from "axios";
-import { BaseURL } from "../../Constants";
-import api from "../../Services/api";
+import { BaseURL } from "../../../Constants";
+import api from "../../../Services/api";
 
 export default function CheckoutScreen({ route, navigation }) {
     const { cartItems, total, userEmail } = route.params; // Add userEmail to params

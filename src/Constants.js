@@ -33,5 +33,6 @@ export const STATUS_CONFIG = {
 };
 
 //export const BaseURL = 'http://192.168.161.15:5151/Api';
- const url ="192.168.100.36";
-export const BaseURL = `http://${url}:5151/Api`;
+
+ //export const BaseURL="https://valentineonodu-001-site1.ktempurl.com/Api"
+export const BaseURL = `http://192.168.100.36:5151/Api`;
